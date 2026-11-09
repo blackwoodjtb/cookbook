@@ -1,0 +1,2939 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Family CookBook</title>
+<style>
+:root {
+  --bg: #faf6f0; --surface: #ffffff; --ink: #2b2420; --muted: #7a6e66;
+  --line: #e8dfd4; --accent: #b4532a; --accent-soft: #f6e4d9; --chip: #f1ebe3;
+  --shadow: 0 1px 2px rgba(60,40,20,.06), 0 4px 16px rgba(60,40,20,.06);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1c1916; --surface: #26221e; --ink: #f1e9e1; --muted: #a8998c;
+    --line: #3a332d; --accent: #e8875a; --accent-soft: #3d2a20; --chip: #2f2a25;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25);
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+header { padding: 32px 16px 8px; max-width: 1100px; margin: 0 auto; }
+h1 { font-family: Georgia, "Times New Roman", serif; font-size: 2.2rem; margin: 0; letter-spacing: -.01em; }
+.sub { color: var(--muted); margin: 4px 0 0; }
+main { max-width: 1100px; margin: 0 auto; padding: 0 16px 48px; }
+.controls { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 16px 0 12px; border-bottom: 1px solid var(--line); }
+.search { width: 100%; padding: 12px 14px; font-size: 1rem; border: 1px solid var(--line); border-radius: 10px;
+  background: var(--surface); color: var(--ink); }
+.search:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+.filters { display: flex; flex-wrap: wrap; gap: 10px 18px; margin-top: 12px; }
+.group { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.group-label { font-size: .75rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-right: 2px; }
+.chip { border: 1px solid transparent; background: var(--chip); color: var(--ink); padding: 4px 11px; border-radius: 999px;
+  font-size: .875rem; cursor: pointer; }
+.chip:hover { border-color: var(--line); }
+.chip[aria-pressed="true"] { background: var(--accent); color: #fff; }
+.bar { display: flex; justify-content: space-between; align-items: center; margin: 16px 0 12px; color: var(--muted); font-size: .9rem; }
+.linkbtn { background: none; border: 0; color: var(--accent); cursor: pointer; font-size: .9rem; padding: 0; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; cursor: pointer;
+  box-shadow: var(--shadow); text-align: left; color: inherit; font: inherit; display: flex; flex-direction: column; gap: 10px; }
+.card:hover, .card:focus-visible { border-color: var(--accent); outline: none; }
+.card h3 { margin: 0; font-family: Georgia, serif; font-size: 1.15rem; line-height: 1.3; }
+.tags { display: flex; flex-wrap: wrap; gap: 5px; }
+.tag { font-size: .75rem; background: var(--accent-soft); color: var(--accent); padding: 2px 8px; border-radius: 999px; }
+.meta { display: flex; gap: 12px; font-size: .85rem; color: var(--muted); flex-wrap: wrap; }
+.macros { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; border-top: 1px solid var(--line); padding-top: 10px; margin-top: auto; }
+.macros div { text-align: center; }
+.macros b { display: block; font-size: 1rem; }
+.macros span { font-size: .7rem; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+.empty { text-align: center; color: var(--muted); padding: 48px 0; }
+
+/* detail */
+.overlay { position: fixed; inset: 0; background: rgba(20,14,10,.55); display: none; z-index: 20; overflow-y: auto; padding: 24px 16px; }
+.overlay.open { display: block; }
+.detail { background: var(--surface); max-width: 760px; margin: 0 auto; border-radius: 16px; padding: 28px; position: relative; box-shadow: var(--shadow); }
+.close { position: absolute; top: 14px; right: 14px; border: 0; background: var(--chip); color: var(--ink); width: 36px; height: 36px;
+  border-radius: 50%; font-size: 1.2rem; cursor: pointer; }
+.detail h2 { font-family: Georgia, serif; font-size: 1.8rem; margin: 0 40px 8px 0; line-height: 1.2; }
+.detail .intro { color: var(--muted); }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; margin: 18px 0; }
+.fact { background: var(--chip); border-radius: 10px; padding: 8px 10px; }
+.fact span { display: block; font-size: .7rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.detail h3 { font-size: .8rem; text-transform: uppercase; letter-spacing: .08em; color: var(--accent); margin: 24px 0 8px; }
+.detail h4 { margin: 12px 0 4px; font-size: .95rem; }
+.detail ul, .detail ol { padding-left: 1.3em; margin: 0; }
+.detail li { margin: 4px 0; }
+.detail ol li { margin: 8px 0; }
+.nutri { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.nutri div { background: var(--accent-soft); border-radius: 10px; padding: 10px; text-align: center; }
+.nutri b { display: block; font-size: 1.3rem; color: var(--accent); }
+.nutri span { font-size: .75rem; color: var(--muted); }
+.stepper { display: flex; align-items: center; gap: 6px; margin-top: 2px; }
+.stepper button { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface);
+  color: var(--ink); font-size: 1rem; line-height: 1; cursor: pointer; }
+.stepper button:hover { border-color: var(--accent); }
+.stepper input { width: 44px; text-align: center; font: inherit; font-weight: 600; border: 1px solid var(--line); border-radius: 6px;
+  background: var(--surface); color: var(--ink); padding: 2px 0; }
+.qty.scaled { color: var(--accent); font-weight: 600; }
+.scale-note { font-size: .85rem; color: var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 6px 10px; margin: 0 0 8px; }
+.tabs { display: flex; gap: 4px; margin-top: 18px; border-bottom: 1px solid var(--line); }
+.tab { background: none; border: 0; border-bottom: 3px solid transparent; padding: 8px 14px; font: inherit; font-weight: 600;
+  color: var(--muted); cursor: pointer; margin-bottom: -1px; }
+.tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+.badge { display: inline-block; min-width: 20px; padding: 0 6px; border-radius: 999px; background: var(--accent); color: #fff;
+  font-size: .75rem; line-height: 20px; text-align: center; margin-left: 4px; }
+.badge:empty { display: none; }
+.card-top { display: flex; justify-content: space-between; gap: 8px; align-items: flex-start; }
+.planbtn { flex: none; border: 1px solid var(--line); background: var(--surface); color: var(--accent); border-radius: 999px;
+  padding: 3px 10px; font-size: .8rem; font-weight: 600; cursor: pointer; white-space: nowrap; }
+.planbtn.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+.btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+.plan { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 28px; padding-top: 20px; }
+.plan h2 { font-family: Georgia, serif; font-size: 1.4rem; margin: 0 0 12px; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px; box-shadow: var(--shadow); }
+.prow { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.prow:last-child { border-bottom: 0; }
+.prow .pt { flex: 1; min-width: 0; }
+.prow .pt button { background: none; border: 0; padding: 0; font: inherit; font-weight: 600; color: var(--ink); cursor: pointer; text-align: left; }
+.prow .pt button:hover { color: var(--accent); }
+.prow .pt small { display: block; color: var(--muted); }
+.x { border: 0; background: none; color: var(--muted); font-size: 1.2rem; cursor: pointer; padding: 4px; }
+.x:hover { color: var(--accent); }
+.totals { margin-top: 12px; font-size: .85rem; color: var(--muted); }
+.shop { list-style: none; padding: 0; margin: 0; }
+.shop li { border-bottom: 1px solid var(--line); }
+.shop li:last-child { border-bottom: 0; }
+.shop label { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; cursor: pointer; }
+.shop input { margin-top: 4px; width: 18px; height: 18px; accent-color: var(--accent); flex: none; }
+.shop .amt { font-weight: 600; }
+.shop small { display: block; color: var(--muted); font-size: .78rem; }
+.shop li.done .itm { text-decoration: line-through; color: var(--muted); }
+.panel-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 6px; }
+.panel-head h2 { margin: 0; }
+.links { display: flex; gap: 14px; }
+.export { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 4px 0 12px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+.export .btn { padding: 6px 12px; font-size: .85rem; }
+.export label { font-size: .85rem; color: var(--muted); display: flex; gap: 6px; align-items: center; margin-left: auto; cursor: pointer; }
+.toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: var(--ink); color: var(--bg);
+  padding: 10px 16px; border-radius: 10px; font-size: .9rem; z-index: 40; opacity: 0; transition: opacity .2s; pointer-events: none; }
+.toast.show { opacity: 1; }
+.qrbox { position: fixed; inset: 0; background: rgba(20,14,10,.6); display: none; z-index: 30; align-items: center; justify-content: center; padding: 16px; }
+.qrbox.open { display: flex; }
+.qrcard { background: var(--surface); border-radius: 16px; padding: 22px; max-width: 460px; width: 100%; text-align: center; position: relative; }
+.qrcard h3 { margin: 0 0 6px; font-family: Georgia, serif; }
+.qrimg { background: #fff; padding: 12px; border-radius: 10px; display: inline-block; margin: 10px 0; }
+.qrimg svg { display: block; width: min(360px, 75vw); height: auto; }
+@media (max-width: 760px) { .plan { grid-template-columns: 1fr; } }
+.small { font-size: .85rem; color: var(--muted); }
+.src { margin-top: 24px; font-size: .9rem; color: var(--muted); word-break: break-word; }
+.src a { color: var(--accent); }
+.actions { margin-top: 20px; display: flex; gap: 10px; }
+.btn { border: 1px solid var(--line); background: var(--surface); color: var(--ink); padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: .9rem; }
+@media (max-width: 640px) {
+  .cols { grid-template-columns: 1fr; gap: 0; }
+  .detail { padding: 22px 18px; }
+  h1 { font-size: 1.8rem; }
+}
+@media print {
+  body { background: #fff; }
+  body:not(.printing-plan) header, body:not(.printing-plan) main { display: none; }
+  body.printing-plan .tabs, body.printing-plan .links, body.printing-plan .export, body.printing-plan .x, body.printing-plan .stepper button { display: none; }
+  body.printing-plan .panel { box-shadow: none; }
+  .overlay { position: static; background: none; padding: 0; display: block; }
+  .detail { box-shadow: none; padding: 0; }
+  .close, .actions { display: none; }
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>Family CookBook</h1>
+  <p class="sub" id="count"></p>
+  <nav class="tabs" role="tablist">
+    <button class="tab" role="tab" id="tab-recipes" aria-selected="true" onclick="showTab('recipes')">Recipes</button>
+    <button class="tab" role="tab" id="tab-plan" aria-selected="false" onclick="showTab('plan')">Meal Prep<span class="badge" id="planCount"></span></button>
+  </nav>
+</header>
+<main>
+ <section id="view-recipes">
+  <div class="controls">
+    <input class="search" id="q" type="search" placeholder="Search recipes or ingredients…" aria-label="Search">
+    <div class="filters" id="filters"></div>
+  </div>
+  <div class="bar"><span id="showing"></span><button class="linkbtn" id="clear" hidden>Clear filters</button></div>
+  <div class="grid" id="grid"></div>
+  <p class="empty" id="empty" hidden>No recipes match. Try clearing a filter.</p>
+ </section>
+ <section id="view-plan" hidden>
+  <div class="plan">
+    <div class="panel">
+      <div class="panel-head"><h2>This week's meals</h2>
+        <div class="links"><button class="linkbtn" id="clearPlan">Clear plan</button></div></div>
+      <div id="planList"></div>
+      <div class="totals" id="planTotals"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h2>Shopping list</h2>
+        <div class="links"><button class="linkbtn" id="uncheck">Uncheck all</button><button class="linkbtn" onclick="printPlan()">Print</button></div></div>
+      <div class="export" id="exportBar">
+        <button class="btn" onclick="copyList()">Copy list</button>
+        <button class="btn" onclick="emailList()">Email list</button>
+        <button class="btn primary" onclick="showQR()">Show QR code</button>
+        <label><input type="checkbox" id="skipChecked" checked> Leave out checked items</label>
+      </div>
+      <ul class="shop" id="shopList"></ul>
+    </div>
+  </div>
+ </section>
+</main>
+<div class="qrbox" id="qrbox" role="dialog" aria-modal="true">
+  <div class="qrcard">
+    <button class="close" aria-label="Close" onclick="closeQR()">×</button>
+    <h3>Scan with your phone</h3>
+    <p class="small" style="margin:0">Open your phone's camera and point it at the code. Tap the text that pops up to copy it into Notes or a message.</p>
+    <div id="qrout"></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<div class="overlay" id="overlay" role="dialog" aria-modal="true">
+  <article class="detail" id="detail"></article>
+</div>
+<script>
+/* QR code generator: qrcode-generator 1.4.4 by Kazuhiko Arase, MIT license (embedded so it works offline) */
+//---------------------------------------------------------------------
+//
+// QR Code Generator for JavaScript
+//
+// Copyright (c) 2009 Kazuhiko Arase
+//
+// URL: http://www.d-project.com/
+//
+// Licensed under the MIT license:
+//  http://www.opensource.org/licenses/mit-license.php
+//
+// The word 'QR Code' is registered trademark of
+// DENSO WAVE INCORPORATED
+//  http://www.denso-wave.com/qrcode/faqpatent-e.html
+//
+//---------------------------------------------------------------------
+
+var qrcode = function() {
+
+  //---------------------------------------------------------------------
+  // qrcode
+  //---------------------------------------------------------------------
+
+  /**
+   * qrcode
+   * @param typeNumber 1 to 40
+   * @param errorCorrectionLevel 'L','M','Q','H'
+   */
+  var qrcode = function(typeNumber, errorCorrectionLevel) {
+
+    var PAD0 = 0xEC;
+    var PAD1 = 0x11;
+
+    var _typeNumber = typeNumber;
+    var _errorCorrectionLevel = QRErrorCorrectionLevel[errorCorrectionLevel];
+    var _modules = null;
+    var _moduleCount = 0;
+    var _dataCache = null;
+    var _dataList = [];
+
+    var _this = {};
+
+    var makeImpl = function(test, maskPattern) {
+
+      _moduleCount = _typeNumber * 4 + 17;
+      _modules = function(moduleCount) {
+        var modules = new Array(moduleCount);
+        for (var row = 0; row < moduleCount; row += 1) {
+          modules[row] = new Array(moduleCount);
+          for (var col = 0; col < moduleCount; col += 1) {
+            modules[row][col] = null;
+          }
+        }
+        return modules;
+      }(_moduleCount);
+
+      setupPositionProbePattern(0, 0);
+      setupPositionProbePattern(_moduleCount - 7, 0);
+      setupPositionProbePattern(0, _moduleCount - 7);
+      setupPositionAdjustPattern();
+      setupTimingPattern();
+      setupTypeInfo(test, maskPattern);
+
+      if (_typeNumber >= 7) {
+        setupTypeNumber(test);
+      }
+
+      if (_dataCache == null) {
+        _dataCache = createData(_typeNumber, _errorCorrectionLevel, _dataList);
+      }
+
+      mapData(_dataCache, maskPattern);
+    };
+
+    var setupPositionProbePattern = function(row, col) {
+
+      for (var r = -1; r <= 7; r += 1) {
+
+        if (row + r <= -1 || _moduleCount <= row + r) continue;
+
+        for (var c = -1; c <= 7; c += 1) {
+
+          if (col + c <= -1 || _moduleCount <= col + c) continue;
+
+          if ( (0 <= r && r <= 6 && (c == 0 || c == 6) )
+              || (0 <= c && c <= 6 && (r == 0 || r == 6) )
+              || (2 <= r && r <= 4 && 2 <= c && c <= 4) ) {
+            _modules[row + r][col + c] = true;
+          } else {
+            _modules[row + r][col + c] = false;
+          }
+        }
+      }
+    };
+
+    var getBestMaskPattern = function() {
+
+      var minLostPoint = 0;
+      var pattern = 0;
+
+      for (var i = 0; i < 8; i += 1) {
+
+        makeImpl(true, i);
+
+        var lostPoint = QRUtil.getLostPoint(_this);
+
+        if (i == 0 || minLostPoint > lostPoint) {
+          minLostPoint = lostPoint;
+          pattern = i;
+        }
+      }
+
+      return pattern;
+    };
+
+    var setupTimingPattern = function() {
+
+      for (var r = 8; r < _moduleCount - 8; r += 1) {
+        if (_modules[r][6] != null) {
+          continue;
+        }
+        _modules[r][6] = (r % 2 == 0);
+      }
+
+      for (var c = 8; c < _moduleCount - 8; c += 1) {
+        if (_modules[6][c] != null) {
+          continue;
+        }
+        _modules[6][c] = (c % 2 == 0);
+      }
+    };
+
+    var setupPositionAdjustPattern = function() {
+
+      var pos = QRUtil.getPatternPosition(_typeNumber);
+
+      for (var i = 0; i < pos.length; i += 1) {
+
+        for (var j = 0; j < pos.length; j += 1) {
+
+          var row = pos[i];
+          var col = pos[j];
+
+          if (_modules[row][col] != null) {
+            continue;
+          }
+
+          for (var r = -2; r <= 2; r += 1) {
+
+            for (var c = -2; c <= 2; c += 1) {
+
+              if (r == -2 || r == 2 || c == -2 || c == 2
+                  || (r == 0 && c == 0) ) {
+                _modules[row + r][col + c] = true;
+              } else {
+                _modules[row + r][col + c] = false;
+              }
+            }
+          }
+        }
+      }
+    };
+
+    var setupTypeNumber = function(test) {
+
+      var bits = QRUtil.getBCHTypeNumber(_typeNumber);
+
+      for (var i = 0; i < 18; i += 1) {
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+        _modules[Math.floor(i / 3)][i % 3 + _moduleCount - 8 - 3] = mod;
+      }
+
+      for (var i = 0; i < 18; i += 1) {
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+        _modules[i % 3 + _moduleCount - 8 - 3][Math.floor(i / 3)] = mod;
+      }
+    };
+
+    var setupTypeInfo = function(test, maskPattern) {
+
+      var data = (_errorCorrectionLevel << 3) | maskPattern;
+      var bits = QRUtil.getBCHTypeInfo(data);
+
+      // vertical
+      for (var i = 0; i < 15; i += 1) {
+
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+
+        if (i < 6) {
+          _modules[i][8] = mod;
+        } else if (i < 8) {
+          _modules[i + 1][8] = mod;
+        } else {
+          _modules[_moduleCount - 15 + i][8] = mod;
+        }
+      }
+
+      // horizontal
+      for (var i = 0; i < 15; i += 1) {
+
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+
+        if (i < 8) {
+          _modules[8][_moduleCount - i - 1] = mod;
+        } else if (i < 9) {
+          _modules[8][15 - i - 1 + 1] = mod;
+        } else {
+          _modules[8][15 - i - 1] = mod;
+        }
+      }
+
+      // fixed module
+      _modules[_moduleCount - 8][8] = (!test);
+    };
+
+    var mapData = function(data, maskPattern) {
+
+      var inc = -1;
+      var row = _moduleCount - 1;
+      var bitIndex = 7;
+      var byteIndex = 0;
+      var maskFunc = QRUtil.getMaskFunction(maskPattern);
+
+      for (var col = _moduleCount - 1; col > 0; col -= 2) {
+
+        if (col == 6) col -= 1;
+
+        while (true) {
+
+          for (var c = 0; c < 2; c += 1) {
+
+            if (_modules[row][col - c] == null) {
+
+              var dark = false;
+
+              if (byteIndex < data.length) {
+                dark = ( ( (data[byteIndex] >>> bitIndex) & 1) == 1);
+              }
+
+              var mask = maskFunc(row, col - c);
+
+              if (mask) {
+                dark = !dark;
+              }
+
+              _modules[row][col - c] = dark;
+              bitIndex -= 1;
+
+              if (bitIndex == -1) {
+                byteIndex += 1;
+                bitIndex = 7;
+              }
+            }
+          }
+
+          row += inc;
+
+          if (row < 0 || _moduleCount <= row) {
+            row -= inc;
+            inc = -inc;
+            break;
+          }
+        }
+      }
+    };
+
+    var createBytes = function(buffer, rsBlocks) {
+
+      var offset = 0;
+
+      var maxDcCount = 0;
+      var maxEcCount = 0;
+
+      var dcdata = new Array(rsBlocks.length);
+      var ecdata = new Array(rsBlocks.length);
+
+      for (var r = 0; r < rsBlocks.length; r += 1) {
+
+        var dcCount = rsBlocks[r].dataCount;
+        var ecCount = rsBlocks[r].totalCount - dcCount;
+
+        maxDcCount = Math.max(maxDcCount, dcCount);
+        maxEcCount = Math.max(maxEcCount, ecCount);
+
+        dcdata[r] = new Array(dcCount);
+
+        for (var i = 0; i < dcdata[r].length; i += 1) {
+          dcdata[r][i] = 0xff & buffer.getBuffer()[i + offset];
+        }
+        offset += dcCount;
+
+        var rsPoly = QRUtil.getErrorCorrectPolynomial(ecCount);
+        var rawPoly = qrPolynomial(dcdata[r], rsPoly.getLength() - 1);
+
+        var modPoly = rawPoly.mod(rsPoly);
+        ecdata[r] = new Array(rsPoly.getLength() - 1);
+        for (var i = 0; i < ecdata[r].length; i += 1) {
+          var modIndex = i + modPoly.getLength() - ecdata[r].length;
+          ecdata[r][i] = (modIndex >= 0)? modPoly.getAt(modIndex) : 0;
+        }
+      }
+
+      var totalCodeCount = 0;
+      for (var i = 0; i < rsBlocks.length; i += 1) {
+        totalCodeCount += rsBlocks[i].totalCount;
+      }
+
+      var data = new Array(totalCodeCount);
+      var index = 0;
+
+      for (var i = 0; i < maxDcCount; i += 1) {
+        for (var r = 0; r < rsBlocks.length; r += 1) {
+          if (i < dcdata[r].length) {
+            data[index] = dcdata[r][i];
+            index += 1;
+          }
+        }
+      }
+
+      for (var i = 0; i < maxEcCount; i += 1) {
+        for (var r = 0; r < rsBlocks.length; r += 1) {
+          if (i < ecdata[r].length) {
+            data[index] = ecdata[r][i];
+            index += 1;
+          }
+        }
+      }
+
+      return data;
+    };
+
+    var createData = function(typeNumber, errorCorrectionLevel, dataList) {
+
+      var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, errorCorrectionLevel);
+
+      var buffer = qrBitBuffer();
+
+      for (var i = 0; i < dataList.length; i += 1) {
+        var data = dataList[i];
+        buffer.put(data.getMode(), 4);
+        buffer.put(data.getLength(), QRUtil.getLengthInBits(data.getMode(), typeNumber) );
+        data.write(buffer);
+      }
+
+      // calc num max data.
+      var totalDataCount = 0;
+      for (var i = 0; i < rsBlocks.length; i += 1) {
+        totalDataCount += rsBlocks[i].dataCount;
+      }
+
+      if (buffer.getLengthInBits() > totalDataCount * 8) {
+        throw 'code length overflow. ('
+          + buffer.getLengthInBits()
+          + '>'
+          + totalDataCount * 8
+          + ')';
+      }
+
+      // end code
+      if (buffer.getLengthInBits() + 4 <= totalDataCount * 8) {
+        buffer.put(0, 4);
+      }
+
+      // padding
+      while (buffer.getLengthInBits() % 8 != 0) {
+        buffer.putBit(false);
+      }
+
+      // padding
+      while (true) {
+
+        if (buffer.getLengthInBits() >= totalDataCount * 8) {
+          break;
+        }
+        buffer.put(PAD0, 8);
+
+        if (buffer.getLengthInBits() >= totalDataCount * 8) {
+          break;
+        }
+        buffer.put(PAD1, 8);
+      }
+
+      return createBytes(buffer, rsBlocks);
+    };
+
+    _this.addData = function(data, mode) {
+
+      mode = mode || 'Byte';
+
+      var newData = null;
+
+      switch(mode) {
+      case 'Numeric' :
+        newData = qrNumber(data);
+        break;
+      case 'Alphanumeric' :
+        newData = qrAlphaNum(data);
+        break;
+      case 'Byte' :
+        newData = qr8BitByte(data);
+        break;
+      case 'Kanji' :
+        newData = qrKanji(data);
+        break;
+      default :
+        throw 'mode:' + mode;
+      }
+
+      _dataList.push(newData);
+      _dataCache = null;
+    };
+
+    _this.isDark = function(row, col) {
+      if (row < 0 || _moduleCount <= row || col < 0 || _moduleCount <= col) {
+        throw row + ',' + col;
+      }
+      return _modules[row][col];
+    };
+
+    _this.getModuleCount = function() {
+      return _moduleCount;
+    };
+
+    _this.make = function() {
+      if (_typeNumber < 1) {
+        var typeNumber = 1;
+
+        for (; typeNumber < 40; typeNumber++) {
+          var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, _errorCorrectionLevel);
+          var buffer = qrBitBuffer();
+
+          for (var i = 0; i < _dataList.length; i++) {
+            var data = _dataList[i];
+            buffer.put(data.getMode(), 4);
+            buffer.put(data.getLength(), QRUtil.getLengthInBits(data.getMode(), typeNumber) );
+            data.write(buffer);
+          }
+
+          var totalDataCount = 0;
+          for (var i = 0; i < rsBlocks.length; i++) {
+            totalDataCount += rsBlocks[i].dataCount;
+          }
+
+          if (buffer.getLengthInBits() <= totalDataCount * 8) {
+            break;
+          }
+        }
+
+        _typeNumber = typeNumber;
+      }
+
+      makeImpl(false, getBestMaskPattern() );
+    };
+
+    _this.createTableTag = function(cellSize, margin) {
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      var qrHtml = '';
+
+      qrHtml += '<table style="';
+      qrHtml += ' border-width: 0px; border-style: none;';
+      qrHtml += ' border-collapse: collapse;';
+      qrHtml += ' padding: 0px; margin: ' + margin + 'px;';
+      qrHtml += '">';
+      qrHtml += '<tbody>';
+
+      for (var r = 0; r < _this.getModuleCount(); r += 1) {
+
+        qrHtml += '<tr>';
+
+        for (var c = 0; c < _this.getModuleCount(); c += 1) {
+          qrHtml += '<td style="';
+          qrHtml += ' border-width: 0px; border-style: none;';
+          qrHtml += ' border-collapse: collapse;';
+          qrHtml += ' padding: 0px; margin: 0px;';
+          qrHtml += ' width: ' + cellSize + 'px;';
+          qrHtml += ' height: ' + cellSize + 'px;';
+          qrHtml += ' background-color: ';
+          qrHtml += _this.isDark(r, c)? '#000000' : '#ffffff';
+          qrHtml += ';';
+          qrHtml += '"/>';
+        }
+
+        qrHtml += '</tr>';
+      }
+
+      qrHtml += '</tbody>';
+      qrHtml += '</table>';
+
+      return qrHtml;
+    };
+
+    _this.createSvgTag = function(cellSize, margin, alt, title) {
+
+      var opts = {};
+      if (typeof arguments[0] == 'object') {
+        // Called by options.
+        opts = arguments[0];
+        // overwrite cellSize and margin.
+        cellSize = opts.cellSize;
+        margin = opts.margin;
+        alt = opts.alt;
+        title = opts.title;
+      }
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      // Compose alt property surrogate
+      alt = (typeof alt === 'string') ? {text: alt} : alt || {};
+      alt.text = alt.text || null;
+      alt.id = (alt.text) ? alt.id || 'qrcode-description' : null;
+
+      // Compose title property surrogate
+      title = (typeof title === 'string') ? {text: title} : title || {};
+      title.text = title.text || null;
+      title.id = (title.text) ? title.id || 'qrcode-title' : null;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var c, mc, r, mr, qrSvg='', rect;
+
+      rect = 'l' + cellSize + ',0 0,' + cellSize +
+        ' -' + cellSize + ',0 0,-' + cellSize + 'z ';
+
+      qrSvg += '<svg version="1.1" xmlns="http://www.w3.org/2000/svg"';
+      qrSvg += !opts.scalable ? ' width="' + size + 'px" height="' + size + 'px"' : '';
+      qrSvg += ' viewBox="0 0 ' + size + ' ' + size + '" ';
+      qrSvg += ' preserveAspectRatio="xMinYMin meet"';
+      qrSvg += (title.text || alt.text) ? ' role="img" aria-labelledby="' +
+          escapeXml([title.id, alt.id].join(' ').trim() ) + '"' : '';
+      qrSvg += '>';
+      qrSvg += (title.text) ? '<title id="' + escapeXml(title.id) + '">' +
+          escapeXml(title.text) + '</title>' : '';
+      qrSvg += (alt.text) ? '<description id="' + escapeXml(alt.id) + '">' +
+          escapeXml(alt.text) + '</description>' : '';
+      qrSvg += '<rect width="100%" height="100%" fill="white" cx="0" cy="0"/>';
+      qrSvg += '<path d="';
+
+      for (r = 0; r < _this.getModuleCount(); r += 1) {
+        mr = r * cellSize + margin;
+        for (c = 0; c < _this.getModuleCount(); c += 1) {
+          if (_this.isDark(r, c) ) {
+            mc = c*cellSize+margin;
+            qrSvg += 'M' + mc + ',' + mr + rect;
+          }
+        }
+      }
+
+      qrSvg += '" stroke="transparent" fill="black"/>';
+      qrSvg += '</svg>';
+
+      return qrSvg;
+    };
+
+    _this.createDataURL = function(cellSize, margin) {
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var min = margin;
+      var max = size - margin;
+
+      return createDataURL(size, size, function(x, y) {
+        if (min <= x && x < max && min <= y && y < max) {
+          var c = Math.floor( (x - min) / cellSize);
+          var r = Math.floor( (y - min) / cellSize);
+          return _this.isDark(r, c)? 0 : 1;
+        } else {
+          return 1;
+        }
+      } );
+    };
+
+    _this.createImgTag = function(cellSize, margin, alt) {
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+
+      var img = '';
+      img += '<img';
+      img += '\u0020src="';
+      img += _this.createDataURL(cellSize, margin);
+      img += '"';
+      img += '\u0020width="';
+      img += size;
+      img += '"';
+      img += '\u0020height="';
+      img += size;
+      img += '"';
+      if (alt) {
+        img += '\u0020alt="';
+        img += escapeXml(alt);
+        img += '"';
+      }
+      img += '/>';
+
+      return img;
+    };
+
+    var escapeXml = function(s) {
+      var escaped = '';
+      for (var i = 0; i < s.length; i += 1) {
+        var c = s.charAt(i);
+        switch(c) {
+        case '<': escaped += '&lt;'; break;
+        case '>': escaped += '&gt;'; break;
+        case '&': escaped += '&amp;'; break;
+        case '"': escaped += '&quot;'; break;
+        default : escaped += c; break;
+        }
+      }
+      return escaped;
+    };
+
+    var _createHalfASCII = function(margin) {
+      var cellSize = 1;
+      margin = (typeof margin == 'undefined')? cellSize * 2 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var min = margin;
+      var max = size - margin;
+
+      var y, x, r1, r2, p;
+
+      var blocks = {
+        '██': '█',
+        '█ ': '▀',
+        ' █': '▄',
+        '  ': ' '
+      };
+
+      var blocksLastLineNoMargin = {
+        '██': '▀',
+        '█ ': '▀',
+        ' █': ' ',
+        '  ': ' '
+      };
+
+      var ascii = '';
+      for (y = 0; y < size; y += 2) {
+        r1 = Math.floor((y - min) / cellSize);
+        r2 = Math.floor((y + 1 - min) / cellSize);
+        for (x = 0; x < size; x += 1) {
+          p = '█';
+
+          if (min <= x && x < max && min <= y && y < max && _this.isDark(r1, Math.floor((x - min) / cellSize))) {
+            p = ' ';
+          }
+
+          if (min <= x && x < max && min <= y+1 && y+1 < max && _this.isDark(r2, Math.floor((x - min) / cellSize))) {
+            p += ' ';
+          }
+          else {
+            p += '█';
+          }
+
+          // Output 2 characters per pixel, to create full square. 1 character per pixels gives only half width of square.
+          ascii += (margin < 1 && y+1 >= max) ? blocksLastLineNoMargin[p] : blocks[p];
+        }
+
+        ascii += '\n';
+      }
+
+      if (size % 2 && margin > 0) {
+        return ascii.substring(0, ascii.length - size - 1) + Array(size+1).join('▀');
+      }
+
+      return ascii.substring(0, ascii.length-1);
+    };
+
+    _this.createASCII = function(cellSize, margin) {
+      cellSize = cellSize || 1;
+
+      if (cellSize < 2) {
+        return _createHalfASCII(margin);
+      }
+
+      cellSize -= 1;
+      margin = (typeof margin == 'undefined')? cellSize * 2 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var min = margin;
+      var max = size - margin;
+
+      var y, x, r, p;
+
+      var white = Array(cellSize+1).join('██');
+      var black = Array(cellSize+1).join('  ');
+
+      var ascii = '';
+      var line = '';
+      for (y = 0; y < size; y += 1) {
+        r = Math.floor( (y - min) / cellSize);
+        line = '';
+        for (x = 0; x < size; x += 1) {
+          p = 1;
+
+          if (min <= x && x < max && min <= y && y < max && _this.isDark(r, Math.floor((x - min) / cellSize))) {
+            p = 0;
+          }
+
+          // Output 2 characters per pixel, to create full square. 1 character per pixels gives only half width of square.
+          line += p ? white : black;
+        }
+
+        for (r = 0; r < cellSize; r += 1) {
+          ascii += line + '\n';
+        }
+      }
+
+      return ascii.substring(0, ascii.length-1);
+    };
+
+    _this.renderTo2dContext = function(context, cellSize) {
+      cellSize = cellSize || 2;
+      var length = _this.getModuleCount();
+      for (var row = 0; row < length; row++) {
+        for (var col = 0; col < length; col++) {
+          context.fillStyle = _this.isDark(row, col) ? 'black' : 'white';
+          context.fillRect(row * cellSize, col * cellSize, cellSize, cellSize);
+        }
+      }
+    }
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrcode.stringToBytes
+  //---------------------------------------------------------------------
+
+  qrcode.stringToBytesFuncs = {
+    'default' : function(s) {
+      var bytes = [];
+      for (var i = 0; i < s.length; i += 1) {
+        var c = s.charCodeAt(i);
+        bytes.push(c & 0xff);
+      }
+      return bytes;
+    }
+  };
+
+  qrcode.stringToBytes = qrcode.stringToBytesFuncs['default'];
+
+  //---------------------------------------------------------------------
+  // qrcode.createStringToBytes
+  //---------------------------------------------------------------------
+
+  /**
+   * @param unicodeData base64 string of byte array.
+   * [16bit Unicode],[16bit Bytes], ...
+   * @param numChars
+   */
+  qrcode.createStringToBytes = function(unicodeData, numChars) {
+
+    // create conversion map.
+
+    var unicodeMap = function() {
+
+      var bin = base64DecodeInputStream(unicodeData);
+      var read = function() {
+        var b = bin.read();
+        if (b == -1) throw 'eof';
+        return b;
+      };
+
+      var count = 0;
+      var unicodeMap = {};
+      while (true) {
+        var b0 = bin.read();
+        if (b0 == -1) break;
+        var b1 = read();
+        var b2 = read();
+        var b3 = read();
+        var k = String.fromCharCode( (b0 << 8) | b1);
+        var v = (b2 << 8) | b3;
+        unicodeMap[k] = v;
+        count += 1;
+      }
+      if (count != numChars) {
+        throw count + ' != ' + numChars;
+      }
+
+      return unicodeMap;
+    }();
+
+    var unknownChar = '?'.charCodeAt(0);
+
+    return function(s) {
+      var bytes = [];
+      for (var i = 0; i < s.length; i += 1) {
+        var c = s.charCodeAt(i);
+        if (c < 128) {
+          bytes.push(c);
+        } else {
+          var b = unicodeMap[s.charAt(i)];
+          if (typeof b == 'number') {
+            if ( (b & 0xff) == b) {
+              // 1byte
+              bytes.push(b);
+            } else {
+              // 2bytes
+              bytes.push(b >>> 8);
+              bytes.push(b & 0xff);
+            }
+          } else {
+            bytes.push(unknownChar);
+          }
+        }
+      }
+      return bytes;
+    };
+  };
+
+  //---------------------------------------------------------------------
+  // QRMode
+  //---------------------------------------------------------------------
+
+  var QRMode = {
+    MODE_NUMBER :    1 << 0,
+    MODE_ALPHA_NUM : 1 << 1,
+    MODE_8BIT_BYTE : 1 << 2,
+    MODE_KANJI :     1 << 3
+  };
+
+  //---------------------------------------------------------------------
+  // QRErrorCorrectionLevel
+  //---------------------------------------------------------------------
+
+  var QRErrorCorrectionLevel = {
+    L : 1,
+    M : 0,
+    Q : 3,
+    H : 2
+  };
+
+  //---------------------------------------------------------------------
+  // QRMaskPattern
+  //---------------------------------------------------------------------
+
+  var QRMaskPattern = {
+    PATTERN000 : 0,
+    PATTERN001 : 1,
+    PATTERN010 : 2,
+    PATTERN011 : 3,
+    PATTERN100 : 4,
+    PATTERN101 : 5,
+    PATTERN110 : 6,
+    PATTERN111 : 7
+  };
+
+  //---------------------------------------------------------------------
+  // QRUtil
+  //---------------------------------------------------------------------
+
+  var QRUtil = function() {
+
+    var PATTERN_POSITION_TABLE = [
+      [],
+      [6, 18],
+      [6, 22],
+      [6, 26],
+      [6, 30],
+      [6, 34],
+      [6, 22, 38],
+      [6, 24, 42],
+      [6, 26, 46],
+      [6, 28, 50],
+      [6, 30, 54],
+      [6, 32, 58],
+      [6, 34, 62],
+      [6, 26, 46, 66],
+      [6, 26, 48, 70],
+      [6, 26, 50, 74],
+      [6, 30, 54, 78],
+      [6, 30, 56, 82],
+      [6, 30, 58, 86],
+      [6, 34, 62, 90],
+      [6, 28, 50, 72, 94],
+      [6, 26, 50, 74, 98],
+      [6, 30, 54, 78, 102],
+      [6, 28, 54, 80, 106],
+      [6, 32, 58, 84, 110],
+      [6, 30, 58, 86, 114],
+      [6, 34, 62, 90, 118],
+      [6, 26, 50, 74, 98, 122],
+      [6, 30, 54, 78, 102, 126],
+      [6, 26, 52, 78, 104, 130],
+      [6, 30, 56, 82, 108, 134],
+      [6, 34, 60, 86, 112, 138],
+      [6, 30, 58, 86, 114, 142],
+      [6, 34, 62, 90, 118, 146],
+      [6, 30, 54, 78, 102, 126, 150],
+      [6, 24, 50, 76, 102, 128, 154],
+      [6, 28, 54, 80, 106, 132, 158],
+      [6, 32, 58, 84, 110, 136, 162],
+      [6, 26, 54, 82, 110, 138, 166],
+      [6, 30, 58, 86, 114, 142, 170]
+    ];
+    var G15 = (1 << 10) | (1 << 8) | (1 << 5) | (1 << 4) | (1 << 2) | (1 << 1) | (1 << 0);
+    var G18 = (1 << 12) | (1 << 11) | (1 << 10) | (1 << 9) | (1 << 8) | (1 << 5) | (1 << 2) | (1 << 0);
+    var G15_MASK = (1 << 14) | (1 << 12) | (1 << 10) | (1 << 4) | (1 << 1);
+
+    var _this = {};
+
+    var getBCHDigit = function(data) {
+      var digit = 0;
+      while (data != 0) {
+        digit += 1;
+        data >>>= 1;
+      }
+      return digit;
+    };
+
+    _this.getBCHTypeInfo = function(data) {
+      var d = data << 10;
+      while (getBCHDigit(d) - getBCHDigit(G15) >= 0) {
+        d ^= (G15 << (getBCHDigit(d) - getBCHDigit(G15) ) );
+      }
+      return ( (data << 10) | d) ^ G15_MASK;
+    };
+
+    _this.getBCHTypeNumber = function(data) {
+      var d = data << 12;
+      while (getBCHDigit(d) - getBCHDigit(G18) >= 0) {
+        d ^= (G18 << (getBCHDigit(d) - getBCHDigit(G18) ) );
+      }
+      return (data << 12) | d;
+    };
+
+    _this.getPatternPosition = function(typeNumber) {
+      return PATTERN_POSITION_TABLE[typeNumber - 1];
+    };
+
+    _this.getMaskFunction = function(maskPattern) {
+
+      switch (maskPattern) {
+
+      case QRMaskPattern.PATTERN000 :
+        return function(i, j) { return (i + j) % 2 == 0; };
+      case QRMaskPattern.PATTERN001 :
+        return function(i, j) { return i % 2 == 0; };
+      case QRMaskPattern.PATTERN010 :
+        return function(i, j) { return j % 3 == 0; };
+      case QRMaskPattern.PATTERN011 :
+        return function(i, j) { return (i + j) % 3 == 0; };
+      case QRMaskPattern.PATTERN100 :
+        return function(i, j) { return (Math.floor(i / 2) + Math.floor(j / 3) ) % 2 == 0; };
+      case QRMaskPattern.PATTERN101 :
+        return function(i, j) { return (i * j) % 2 + (i * j) % 3 == 0; };
+      case QRMaskPattern.PATTERN110 :
+        return function(i, j) { return ( (i * j) % 2 + (i * j) % 3) % 2 == 0; };
+      case QRMaskPattern.PATTERN111 :
+        return function(i, j) { return ( (i * j) % 3 + (i + j) % 2) % 2 == 0; };
+
+      default :
+        throw 'bad maskPattern:' + maskPattern;
+      }
+    };
+
+    _this.getErrorCorrectPolynomial = function(errorCorrectLength) {
+      var a = qrPolynomial([1], 0);
+      for (var i = 0; i < errorCorrectLength; i += 1) {
+        a = a.multiply(qrPolynomial([1, QRMath.gexp(i)], 0) );
+      }
+      return a;
+    };
+
+    _this.getLengthInBits = function(mode, type) {
+
+      if (1 <= type && type < 10) {
+
+        // 1 - 9
+
+        switch(mode) {
+        case QRMode.MODE_NUMBER    : return 10;
+        case QRMode.MODE_ALPHA_NUM : return 9;
+        case QRMode.MODE_8BIT_BYTE : return 8;
+        case QRMode.MODE_KANJI     : return 8;
+        default :
+          throw 'mode:' + mode;
+        }
+
+      } else if (type < 27) {
+
+        // 10 - 26
+
+        switch(mode) {
+        case QRMode.MODE_NUMBER    : return 12;
+        case QRMode.MODE_ALPHA_NUM : return 11;
+        case QRMode.MODE_8BIT_BYTE : return 16;
+        case QRMode.MODE_KANJI     : return 10;
+        default :
+          throw 'mode:' + mode;
+        }
+
+      } else if (type < 41) {
+
+        // 27 - 40
+
+        switch(mode) {
+        case QRMode.MODE_NUMBER    : return 14;
+        case QRMode.MODE_ALPHA_NUM : return 13;
+        case QRMode.MODE_8BIT_BYTE : return 16;
+        case QRMode.MODE_KANJI     : return 12;
+        default :
+          throw 'mode:' + mode;
+        }
+
+      } else {
+        throw 'type:' + type;
+      }
+    };
+
+    _this.getLostPoint = function(qrcode) {
+
+      var moduleCount = qrcode.getModuleCount();
+
+      var lostPoint = 0;
+
+      // LEVEL1
+
+      for (var row = 0; row < moduleCount; row += 1) {
+        for (var col = 0; col < moduleCount; col += 1) {
+
+          var sameCount = 0;
+          var dark = qrcode.isDark(row, col);
+
+          for (var r = -1; r <= 1; r += 1) {
+
+            if (row + r < 0 || moduleCount <= row + r) {
+              continue;
+            }
+
+            for (var c = -1; c <= 1; c += 1) {
+
+              if (col + c < 0 || moduleCount <= col + c) {
+                continue;
+              }
+
+              if (r == 0 && c == 0) {
+                continue;
+              }
+
+              if (dark == qrcode.isDark(row + r, col + c) ) {
+                sameCount += 1;
+              }
+            }
+          }
+
+          if (sameCount > 5) {
+            lostPoint += (3 + sameCount - 5);
+          }
+        }
+      };
+
+      // LEVEL2
+
+      for (var row = 0; row < moduleCount - 1; row += 1) {
+        for (var col = 0; col < moduleCount - 1; col += 1) {
+          var count = 0;
+          if (qrcode.isDark(row, col) ) count += 1;
+          if (qrcode.isDark(row + 1, col) ) count += 1;
+          if (qrcode.isDark(row, col + 1) ) count += 1;
+          if (qrcode.isDark(row + 1, col + 1) ) count += 1;
+          if (count == 0 || count == 4) {
+            lostPoint += 3;
+          }
+        }
+      }
+
+      // LEVEL3
+
+      for (var row = 0; row < moduleCount; row += 1) {
+        for (var col = 0; col < moduleCount - 6; col += 1) {
+          if (qrcode.isDark(row, col)
+              && !qrcode.isDark(row, col + 1)
+              &&  qrcode.isDark(row, col + 2)
+              &&  qrcode.isDark(row, col + 3)
+              &&  qrcode.isDark(row, col + 4)
+              && !qrcode.isDark(row, col + 5)
+              &&  qrcode.isDark(row, col + 6) ) {
+            lostPoint += 40;
+          }
+        }
+      }
+
+      for (var col = 0; col < moduleCount; col += 1) {
+        for (var row = 0; row < moduleCount - 6; row += 1) {
+          if (qrcode.isDark(row, col)
+              && !qrcode.isDark(row + 1, col)
+              &&  qrcode.isDark(row + 2, col)
+              &&  qrcode.isDark(row + 3, col)
+              &&  qrcode.isDark(row + 4, col)
+              && !qrcode.isDark(row + 5, col)
+              &&  qrcode.isDark(row + 6, col) ) {
+            lostPoint += 40;
+          }
+        }
+      }
+
+      // LEVEL4
+
+      var darkCount = 0;
+
+      for (var col = 0; col < moduleCount; col += 1) {
+        for (var row = 0; row < moduleCount; row += 1) {
+          if (qrcode.isDark(row, col) ) {
+            darkCount += 1;
+          }
+        }
+      }
+
+      var ratio = Math.abs(100 * darkCount / moduleCount / moduleCount - 50) / 5;
+      lostPoint += ratio * 10;
+
+      return lostPoint;
+    };
+
+    return _this;
+  }();
+
+  //---------------------------------------------------------------------
+  // QRMath
+  //---------------------------------------------------------------------
+
+  var QRMath = function() {
+
+    var EXP_TABLE = new Array(256);
+    var LOG_TABLE = new Array(256);
+
+    // initialize tables
+    for (var i = 0; i < 8; i += 1) {
+      EXP_TABLE[i] = 1 << i;
+    }
+    for (var i = 8; i < 256; i += 1) {
+      EXP_TABLE[i] = EXP_TABLE[i - 4]
+        ^ EXP_TABLE[i - 5]
+        ^ EXP_TABLE[i - 6]
+        ^ EXP_TABLE[i - 8];
+    }
+    for (var i = 0; i < 255; i += 1) {
+      LOG_TABLE[EXP_TABLE[i] ] = i;
+    }
+
+    var _this = {};
+
+    _this.glog = function(n) {
+
+      if (n < 1) {
+        throw 'glog(' + n + ')';
+      }
+
+      return LOG_TABLE[n];
+    };
+
+    _this.gexp = function(n) {
+
+      while (n < 0) {
+        n += 255;
+      }
+
+      while (n >= 256) {
+        n -= 255;
+      }
+
+      return EXP_TABLE[n];
+    };
+
+    return _this;
+  }();
+
+  //---------------------------------------------------------------------
+  // qrPolynomial
+  //---------------------------------------------------------------------
+
+  function qrPolynomial(num, shift) {
+
+    if (typeof num.length == 'undefined') {
+      throw num.length + '/' + shift;
+    }
+
+    var _num = function() {
+      var offset = 0;
+      while (offset < num.length && num[offset] == 0) {
+        offset += 1;
+      }
+      var _num = new Array(num.length - offset + shift);
+      for (var i = 0; i < num.length - offset; i += 1) {
+        _num[i] = num[i + offset];
+      }
+      return _num;
+    }();
+
+    var _this = {};
+
+    _this.getAt = function(index) {
+      return _num[index];
+    };
+
+    _this.getLength = function() {
+      return _num.length;
+    };
+
+    _this.multiply = function(e) {
+
+      var num = new Array(_this.getLength() + e.getLength() - 1);
+
+      for (var i = 0; i < _this.getLength(); i += 1) {
+        for (var j = 0; j < e.getLength(); j += 1) {
+          num[i + j] ^= QRMath.gexp(QRMath.glog(_this.getAt(i) ) + QRMath.glog(e.getAt(j) ) );
+        }
+      }
+
+      return qrPolynomial(num, 0);
+    };
+
+    _this.mod = function(e) {
+
+      if (_this.getLength() - e.getLength() < 0) {
+        return _this;
+      }
+
+      var ratio = QRMath.glog(_this.getAt(0) ) - QRMath.glog(e.getAt(0) );
+
+      var num = new Array(_this.getLength() );
+      for (var i = 0; i < _this.getLength(); i += 1) {
+        num[i] = _this.getAt(i);
+      }
+
+      for (var i = 0; i < e.getLength(); i += 1) {
+        num[i] ^= QRMath.gexp(QRMath.glog(e.getAt(i) ) + ratio);
+      }
+
+      // recursive call
+      return qrPolynomial(num, 0).mod(e);
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // QRRSBlock
+  //---------------------------------------------------------------------
+
+  var QRRSBlock = function() {
+
+    var RS_BLOCK_TABLE = [
+
+      // L
+      // M
+      // Q
+      // H
+
+      // 1
+      [1, 26, 19],
+      [1, 26, 16],
+      [1, 26, 13],
+      [1, 26, 9],
+
+      // 2
+      [1, 44, 34],
+      [1, 44, 28],
+      [1, 44, 22],
+      [1, 44, 16],
+
+      // 3
+      [1, 70, 55],
+      [1, 70, 44],
+      [2, 35, 17],
+      [2, 35, 13],
+
+      // 4
+      [1, 100, 80],
+      [2, 50, 32],
+      [2, 50, 24],
+      [4, 25, 9],
+
+      // 5
+      [1, 134, 108],
+      [2, 67, 43],
+      [2, 33, 15, 2, 34, 16],
+      [2, 33, 11, 2, 34, 12],
+
+      // 6
+      [2, 86, 68],
+      [4, 43, 27],
+      [4, 43, 19],
+      [4, 43, 15],
+
+      // 7
+      [2, 98, 78],
+      [4, 49, 31],
+      [2, 32, 14, 4, 33, 15],
+      [4, 39, 13, 1, 40, 14],
+
+      // 8
+      [2, 121, 97],
+      [2, 60, 38, 2, 61, 39],
+      [4, 40, 18, 2, 41, 19],
+      [4, 40, 14, 2, 41, 15],
+
+      // 9
+      [2, 146, 116],
+      [3, 58, 36, 2, 59, 37],
+      [4, 36, 16, 4, 37, 17],
+      [4, 36, 12, 4, 37, 13],
+
+      // 10
+      [2, 86, 68, 2, 87, 69],
+      [4, 69, 43, 1, 70, 44],
+      [6, 43, 19, 2, 44, 20],
+      [6, 43, 15, 2, 44, 16],
+
+      // 11
+      [4, 101, 81],
+      [1, 80, 50, 4, 81, 51],
+      [4, 50, 22, 4, 51, 23],
+      [3, 36, 12, 8, 37, 13],
+
+      // 12
+      [2, 116, 92, 2, 117, 93],
+      [6, 58, 36, 2, 59, 37],
+      [4, 46, 20, 6, 47, 21],
+      [7, 42, 14, 4, 43, 15],
+
+      // 13
+      [4, 133, 107],
+      [8, 59, 37, 1, 60, 38],
+      [8, 44, 20, 4, 45, 21],
+      [12, 33, 11, 4, 34, 12],
+
+      // 14
+      [3, 145, 115, 1, 146, 116],
+      [4, 64, 40, 5, 65, 41],
+      [11, 36, 16, 5, 37, 17],
+      [11, 36, 12, 5, 37, 13],
+
+      // 15
+      [5, 109, 87, 1, 110, 88],
+      [5, 65, 41, 5, 66, 42],
+      [5, 54, 24, 7, 55, 25],
+      [11, 36, 12, 7, 37, 13],
+
+      // 16
+      [5, 122, 98, 1, 123, 99],
+      [7, 73, 45, 3, 74, 46],
+      [15, 43, 19, 2, 44, 20],
+      [3, 45, 15, 13, 46, 16],
+
+      // 17
+      [1, 135, 107, 5, 136, 108],
+      [10, 74, 46, 1, 75, 47],
+      [1, 50, 22, 15, 51, 23],
+      [2, 42, 14, 17, 43, 15],
+
+      // 18
+      [5, 150, 120, 1, 151, 121],
+      [9, 69, 43, 4, 70, 44],
+      [17, 50, 22, 1, 51, 23],
+      [2, 42, 14, 19, 43, 15],
+
+      // 19
+      [3, 141, 113, 4, 142, 114],
+      [3, 70, 44, 11, 71, 45],
+      [17, 47, 21, 4, 48, 22],
+      [9, 39, 13, 16, 40, 14],
+
+      // 20
+      [3, 135, 107, 5, 136, 108],
+      [3, 67, 41, 13, 68, 42],
+      [15, 54, 24, 5, 55, 25],
+      [15, 43, 15, 10, 44, 16],
+
+      // 21
+      [4, 144, 116, 4, 145, 117],
+      [17, 68, 42],
+      [17, 50, 22, 6, 51, 23],
+      [19, 46, 16, 6, 47, 17],
+
+      // 22
+      [2, 139, 111, 7, 140, 112],
+      [17, 74, 46],
+      [7, 54, 24, 16, 55, 25],
+      [34, 37, 13],
+
+      // 23
+      [4, 151, 121, 5, 152, 122],
+      [4, 75, 47, 14, 76, 48],
+      [11, 54, 24, 14, 55, 25],
+      [16, 45, 15, 14, 46, 16],
+
+      // 24
+      [6, 147, 117, 4, 148, 118],
+      [6, 73, 45, 14, 74, 46],
+      [11, 54, 24, 16, 55, 25],
+      [30, 46, 16, 2, 47, 17],
+
+      // 25
+      [8, 132, 106, 4, 133, 107],
+      [8, 75, 47, 13, 76, 48],
+      [7, 54, 24, 22, 55, 25],
+      [22, 45, 15, 13, 46, 16],
+
+      // 26
+      [10, 142, 114, 2, 143, 115],
+      [19, 74, 46, 4, 75, 47],
+      [28, 50, 22, 6, 51, 23],
+      [33, 46, 16, 4, 47, 17],
+
+      // 27
+      [8, 152, 122, 4, 153, 123],
+      [22, 73, 45, 3, 74, 46],
+      [8, 53, 23, 26, 54, 24],
+      [12, 45, 15, 28, 46, 16],
+
+      // 28
+      [3, 147, 117, 10, 148, 118],
+      [3, 73, 45, 23, 74, 46],
+      [4, 54, 24, 31, 55, 25],
+      [11, 45, 15, 31, 46, 16],
+
+      // 29
+      [7, 146, 116, 7, 147, 117],
+      [21, 73, 45, 7, 74, 46],
+      [1, 53, 23, 37, 54, 24],
+      [19, 45, 15, 26, 46, 16],
+
+      // 30
+      [5, 145, 115, 10, 146, 116],
+      [19, 75, 47, 10, 76, 48],
+      [15, 54, 24, 25, 55, 25],
+      [23, 45, 15, 25, 46, 16],
+
+      // 31
+      [13, 145, 115, 3, 146, 116],
+      [2, 74, 46, 29, 75, 47],
+      [42, 54, 24, 1, 55, 25],
+      [23, 45, 15, 28, 46, 16],
+
+      // 32
+      [17, 145, 115],
+      [10, 74, 46, 23, 75, 47],
+      [10, 54, 24, 35, 55, 25],
+      [19, 45, 15, 35, 46, 16],
+
+      // 33
+      [17, 145, 115, 1, 146, 116],
+      [14, 74, 46, 21, 75, 47],
+      [29, 54, 24, 19, 55, 25],
+      [11, 45, 15, 46, 46, 16],
+
+      // 34
+      [13, 145, 115, 6, 146, 116],
+      [14, 74, 46, 23, 75, 47],
+      [44, 54, 24, 7, 55, 25],
+      [59, 46, 16, 1, 47, 17],
+
+      // 35
+      [12, 151, 121, 7, 152, 122],
+      [12, 75, 47, 26, 76, 48],
+      [39, 54, 24, 14, 55, 25],
+      [22, 45, 15, 41, 46, 16],
+
+      // 36
+      [6, 151, 121, 14, 152, 122],
+      [6, 75, 47, 34, 76, 48],
+      [46, 54, 24, 10, 55, 25],
+      [2, 45, 15, 64, 46, 16],
+
+      // 37
+      [17, 152, 122, 4, 153, 123],
+      [29, 74, 46, 14, 75, 47],
+      [49, 54, 24, 10, 55, 25],
+      [24, 45, 15, 46, 46, 16],
+
+      // 38
+      [4, 152, 122, 18, 153, 123],
+      [13, 74, 46, 32, 75, 47],
+      [48, 54, 24, 14, 55, 25],
+      [42, 45, 15, 32, 46, 16],
+
+      // 39
+      [20, 147, 117, 4, 148, 118],
+      [40, 75, 47, 7, 76, 48],
+      [43, 54, 24, 22, 55, 25],
+      [10, 45, 15, 67, 46, 16],
+
+      // 40
+      [19, 148, 118, 6, 149, 119],
+      [18, 75, 47, 31, 76, 48],
+      [34, 54, 24, 34, 55, 25],
+      [20, 45, 15, 61, 46, 16]
+    ];
+
+    var qrRSBlock = function(totalCount, dataCount) {
+      var _this = {};
+      _this.totalCount = totalCount;
+      _this.dataCount = dataCount;
+      return _this;
+    };
+
+    var _this = {};
+
+    var getRsBlockTable = function(typeNumber, errorCorrectionLevel) {
+
+      switch(errorCorrectionLevel) {
+      case QRErrorCorrectionLevel.L :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 0];
+      case QRErrorCorrectionLevel.M :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 1];
+      case QRErrorCorrectionLevel.Q :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 2];
+      case QRErrorCorrectionLevel.H :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 3];
+      default :
+        return undefined;
+      }
+    };
+
+    _this.getRSBlocks = function(typeNumber, errorCorrectionLevel) {
+
+      var rsBlock = getRsBlockTable(typeNumber, errorCorrectionLevel);
+
+      if (typeof rsBlock == 'undefined') {
+        throw 'bad rs block @ typeNumber:' + typeNumber +
+            '/errorCorrectionLevel:' + errorCorrectionLevel;
+      }
+
+      var length = rsBlock.length / 3;
+
+      var list = [];
+
+      for (var i = 0; i < length; i += 1) {
+
+        var count = rsBlock[i * 3 + 0];
+        var totalCount = rsBlock[i * 3 + 1];
+        var dataCount = rsBlock[i * 3 + 2];
+
+        for (var j = 0; j < count; j += 1) {
+          list.push(qrRSBlock(totalCount, dataCount) );
+        }
+      }
+
+      return list;
+    };
+
+    return _this;
+  }();
+
+  //---------------------------------------------------------------------
+  // qrBitBuffer
+  //---------------------------------------------------------------------
+
+  var qrBitBuffer = function() {
+
+    var _buffer = [];
+    var _length = 0;
+
+    var _this = {};
+
+    _this.getBuffer = function() {
+      return _buffer;
+    };
+
+    _this.getAt = function(index) {
+      var bufIndex = Math.floor(index / 8);
+      return ( (_buffer[bufIndex] >>> (7 - index % 8) ) & 1) == 1;
+    };
+
+    _this.put = function(num, length) {
+      for (var i = 0; i < length; i += 1) {
+        _this.putBit( ( (num >>> (length - i - 1) ) & 1) == 1);
+      }
+    };
+
+    _this.getLengthInBits = function() {
+      return _length;
+    };
+
+    _this.putBit = function(bit) {
+
+      var bufIndex = Math.floor(_length / 8);
+      if (_buffer.length <= bufIndex) {
+        _buffer.push(0);
+      }
+
+      if (bit) {
+        _buffer[bufIndex] |= (0x80 >>> (_length % 8) );
+      }
+
+      _length += 1;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrNumber
+  //---------------------------------------------------------------------
+
+  var qrNumber = function(data) {
+
+    var _mode = QRMode.MODE_NUMBER;
+    var _data = data;
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return _data.length;
+    };
+
+    _this.write = function(buffer) {
+
+      var data = _data;
+
+      var i = 0;
+
+      while (i + 2 < data.length) {
+        buffer.put(strToNum(data.substring(i, i + 3) ), 10);
+        i += 3;
+      }
+
+      if (i < data.length) {
+        if (data.length - i == 1) {
+          buffer.put(strToNum(data.substring(i, i + 1) ), 4);
+        } else if (data.length - i == 2) {
+          buffer.put(strToNum(data.substring(i, i + 2) ), 7);
+        }
+      }
+    };
+
+    var strToNum = function(s) {
+      var num = 0;
+      for (var i = 0; i < s.length; i += 1) {
+        num = num * 10 + chatToNum(s.charAt(i) );
+      }
+      return num;
+    };
+
+    var chatToNum = function(c) {
+      if ('0' <= c && c <= '9') {
+        return c.charCodeAt(0) - '0'.charCodeAt(0);
+      }
+      throw 'illegal char :' + c;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrAlphaNum
+  //---------------------------------------------------------------------
+
+  var qrAlphaNum = function(data) {
+
+    var _mode = QRMode.MODE_ALPHA_NUM;
+    var _data = data;
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return _data.length;
+    };
+
+    _this.write = function(buffer) {
+
+      var s = _data;
+
+      var i = 0;
+
+      while (i + 1 < s.length) {
+        buffer.put(
+          getCode(s.charAt(i) ) * 45 +
+          getCode(s.charAt(i + 1) ), 11);
+        i += 2;
+      }
+
+      if (i < s.length) {
+        buffer.put(getCode(s.charAt(i) ), 6);
+      }
+    };
+
+    var getCode = function(c) {
+
+      if ('0' <= c && c <= '9') {
+        return c.charCodeAt(0) - '0'.charCodeAt(0);
+      } else if ('A' <= c && c <= 'Z') {
+        return c.charCodeAt(0) - 'A'.charCodeAt(0) + 10;
+      } else {
+        switch (c) {
+        case ' ' : return 36;
+        case '$' : return 37;
+        case '%' : return 38;
+        case '*' : return 39;
+        case '+' : return 40;
+        case '-' : return 41;
+        case '.' : return 42;
+        case '/' : return 43;
+        case ':' : return 44;
+        default :
+          throw 'illegal char :' + c;
+        }
+      }
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qr8BitByte
+  //---------------------------------------------------------------------
+
+  var qr8BitByte = function(data) {
+
+    var _mode = QRMode.MODE_8BIT_BYTE;
+    var _data = data;
+    var _bytes = qrcode.stringToBytes(data);
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return _bytes.length;
+    };
+
+    _this.write = function(buffer) {
+      for (var i = 0; i < _bytes.length; i += 1) {
+        buffer.put(_bytes[i], 8);
+      }
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrKanji
+  //---------------------------------------------------------------------
+
+  var qrKanji = function(data) {
+
+    var _mode = QRMode.MODE_KANJI;
+    var _data = data;
+
+    var stringToBytes = qrcode.stringToBytesFuncs['SJIS'];
+    if (!stringToBytes) {
+      throw 'sjis not supported.';
+    }
+    !function(c, code) {
+      // self test for sjis support.
+      var test = stringToBytes(c);
+      if (test.length != 2 || ( (test[0] << 8) | test[1]) != code) {
+        throw 'sjis not supported.';
+      }
+    }('\u53cb', 0x9746);
+
+    var _bytes = stringToBytes(data);
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return ~~(_bytes.length / 2);
+    };
+
+    _this.write = function(buffer) {
+
+      var data = _bytes;
+
+      var i = 0;
+
+      while (i + 1 < data.length) {
+
+        var c = ( (0xff & data[i]) << 8) | (0xff & data[i + 1]);
+
+        if (0x8140 <= c && c <= 0x9FFC) {
+          c -= 0x8140;
+        } else if (0xE040 <= c && c <= 0xEBBF) {
+          c -= 0xC140;
+        } else {
+          throw 'illegal char at ' + (i + 1) + '/' + c;
+        }
+
+        c = ( (c >>> 8) & 0xff) * 0xC0 + (c & 0xff);
+
+        buffer.put(c, 13);
+
+        i += 2;
+      }
+
+      if (i < data.length) {
+        throw 'illegal char at ' + (i + 1);
+      }
+    };
+
+    return _this;
+  };
+
+  //=====================================================================
+  // GIF Support etc.
+  //
+
+  //---------------------------------------------------------------------
+  // byteArrayOutputStream
+  //---------------------------------------------------------------------
+
+  var byteArrayOutputStream = function() {
+
+    var _bytes = [];
+
+    var _this = {};
+
+    _this.writeByte = function(b) {
+      _bytes.push(b & 0xff);
+    };
+
+    _this.writeShort = function(i) {
+      _this.writeByte(i);
+      _this.writeByte(i >>> 8);
+    };
+
+    _this.writeBytes = function(b, off, len) {
+      off = off || 0;
+      len = len || b.length;
+      for (var i = 0; i < len; i += 1) {
+        _this.writeByte(b[i + off]);
+      }
+    };
+
+    _this.writeString = function(s) {
+      for (var i = 0; i < s.length; i += 1) {
+        _this.writeByte(s.charCodeAt(i) );
+      }
+    };
+
+    _this.toByteArray = function() {
+      return _bytes;
+    };
+
+    _this.toString = function() {
+      var s = '';
+      s += '[';
+      for (var i = 0; i < _bytes.length; i += 1) {
+        if (i > 0) {
+          s += ',';
+        }
+        s += _bytes[i];
+      }
+      s += ']';
+      return s;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // base64EncodeOutputStream
+  //---------------------------------------------------------------------
+
+  var base64EncodeOutputStream = function() {
+
+    var _buffer = 0;
+    var _buflen = 0;
+    var _length = 0;
+    var _base64 = '';
+
+    var _this = {};
+
+    var writeEncoded = function(b) {
+      _base64 += String.fromCharCode(encode(b & 0x3f) );
+    };
+
+    var encode = function(n) {
+      if (n < 0) {
+        // error.
+      } else if (n < 26) {
+        return 0x41 + n;
+      } else if (n < 52) {
+        return 0x61 + (n - 26);
+      } else if (n < 62) {
+        return 0x30 + (n - 52);
+      } else if (n == 62) {
+        return 0x2b;
+      } else if (n == 63) {
+        return 0x2f;
+      }
+      throw 'n:' + n;
+    };
+
+    _this.writeByte = function(n) {
+
+      _buffer = (_buffer << 8) | (n & 0xff);
+      _buflen += 8;
+      _length += 1;
+
+      while (_buflen >= 6) {
+        writeEncoded(_buffer >>> (_buflen - 6) );
+        _buflen -= 6;
+      }
+    };
+
+    _this.flush = function() {
+
+      if (_buflen > 0) {
+        writeEncoded(_buffer << (6 - _buflen) );
+        _buffer = 0;
+        _buflen = 0;
+      }
+
+      if (_length % 3 != 0) {
+        // padding
+        var padlen = 3 - _length % 3;
+        for (var i = 0; i < padlen; i += 1) {
+          _base64 += '=';
+        }
+      }
+    };
+
+    _this.toString = function() {
+      return _base64;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // base64DecodeInputStream
+  //---------------------------------------------------------------------
+
+  var base64DecodeInputStream = function(str) {
+
+    var _str = str;
+    var _pos = 0;
+    var _buffer = 0;
+    var _buflen = 0;
+
+    var _this = {};
+
+    _this.read = function() {
+
+      while (_buflen < 8) {
+
+        if (_pos >= _str.length) {
+          if (_buflen == 0) {
+            return -1;
+          }
+          throw 'unexpected end of file./' + _buflen;
+        }
+
+        var c = _str.charAt(_pos);
+        _pos += 1;
+
+        if (c == '=') {
+          _buflen = 0;
+          return -1;
+        } else if (c.match(/^\s$/) ) {
+          // ignore if whitespace.
+          continue;
+        }
+
+        _buffer = (_buffer << 6) | decode(c.charCodeAt(0) );
+        _buflen += 6;
+      }
+
+      var n = (_buffer >>> (_buflen - 8) ) & 0xff;
+      _buflen -= 8;
+      return n;
+    };
+
+    var decode = function(c) {
+      if (0x41 <= c && c <= 0x5a) {
+        return c - 0x41;
+      } else if (0x61 <= c && c <= 0x7a) {
+        return c - 0x61 + 26;
+      } else if (0x30 <= c && c <= 0x39) {
+        return c - 0x30 + 52;
+      } else if (c == 0x2b) {
+        return 62;
+      } else if (c == 0x2f) {
+        return 63;
+      } else {
+        throw 'c:' + c;
+      }
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // gifImage (B/W)
+  //---------------------------------------------------------------------
+
+  var gifImage = function(width, height) {
+
+    var _width = width;
+    var _height = height;
+    var _data = new Array(width * height);
+
+    var _this = {};
+
+    _this.setPixel = function(x, y, pixel) {
+      _data[y * _width + x] = pixel;
+    };
+
+    _this.write = function(out) {
+
+      //---------------------------------
+      // GIF Signature
+
+      out.writeString('GIF87a');
+
+      //---------------------------------
+      // Screen Descriptor
+
+      out.writeShort(_width);
+      out.writeShort(_height);
+
+      out.writeByte(0x80); // 2bit
+      out.writeByte(0);
+      out.writeByte(0);
+
+      //---------------------------------
+      // Global Color Map
+
+      // black
+      out.writeByte(0x00);
+      out.writeByte(0x00);
+      out.writeByte(0x00);
+
+      // white
+      out.writeByte(0xff);
+      out.writeByte(0xff);
+      out.writeByte(0xff);
+
+      //---------------------------------
+      // Image Descriptor
+
+      out.writeString(',');
+      out.writeShort(0);
+      out.writeShort(0);
+      out.writeShort(_width);
+      out.writeShort(_height);
+      out.writeByte(0);
+
+      //---------------------------------
+      // Local Color Map
+
+      //---------------------------------
+      // Raster Data
+
+      var lzwMinCodeSize = 2;
+      var raster = getLZWRaster(lzwMinCodeSize);
+
+      out.writeByte(lzwMinCodeSize);
+
+      var offset = 0;
+
+      while (raster.length - offset > 255) {
+        out.writeByte(255);
+        out.writeBytes(raster, offset, 255);
+        offset += 255;
+      }
+
+      out.writeByte(raster.length - offset);
+      out.writeBytes(raster, offset, raster.length - offset);
+      out.writeByte(0x00);
+
+      //---------------------------------
+      // GIF Terminator
+      out.writeString(';');
+    };
+
+    var bitOutputStream = function(out) {
+
+      var _out = out;
+      var _bitLength = 0;
+      var _bitBuffer = 0;
+
+      var _this = {};
+
+      _this.write = function(data, length) {
+
+        if ( (data >>> length) != 0) {
+          throw 'length over';
+        }
+
+        while (_bitLength + length >= 8) {
+          _out.writeByte(0xff & ( (data << _bitLength) | _bitBuffer) );
+          length -= (8 - _bitLength);
+          data >>>= (8 - _bitLength);
+          _bitBuffer = 0;
+          _bitLength = 0;
+        }
+
+        _bitBuffer = (data << _bitLength) | _bitBuffer;
+        _bitLength = _bitLength + length;
+      };
+
+      _this.flush = function() {
+        if (_bitLength > 0) {
+          _out.writeByte(_bitBuffer);
+        }
+      };
+
+      return _this;
+    };
+
+    var getLZWRaster = function(lzwMinCodeSize) {
+
+      var clearCode = 1 << lzwMinCodeSize;
+      var endCode = (1 << lzwMinCodeSize) + 1;
+      var bitLength = lzwMinCodeSize + 1;
+
+      // Setup LZWTable
+      var table = lzwTable();
+
+      for (var i = 0; i < clearCode; i += 1) {
+        table.add(String.fromCharCode(i) );
+      }
+      table.add(String.fromCharCode(clearCode) );
+      table.add(String.fromCharCode(endCode) );
+
+      var byteOut = byteArrayOutputStream();
+      var bitOut = bitOutputStream(byteOut);
+
+      // clear code
+      bitOut.write(clearCode, bitLength);
+
+      var dataIndex = 0;
+
+      var s = String.fromCharCode(_data[dataIndex]);
+      dataIndex += 1;
+
+      while (dataIndex < _data.length) {
+
+        var c = String.fromCharCode(_data[dataIndex]);
+        dataIndex += 1;
+
+        if (table.contains(s + c) ) {
+
+          s = s + c;
+
+        } else {
+
+          bitOut.write(table.indexOf(s), bitLength);
+
+          if (table.size() < 0xfff) {
+
+            if (table.size() == (1 << bitLength) ) {
+              bitLength += 1;
+            }
+
+            table.add(s + c);
+          }
+
+          s = c;
+        }
+      }
+
+      bitOut.write(table.indexOf(s), bitLength);
+
+      // end code
+      bitOut.write(endCode, bitLength);
+
+      bitOut.flush();
+
+      return byteOut.toByteArray();
+    };
+
+    var lzwTable = function() {
+
+      var _map = {};
+      var _size = 0;
+
+      var _this = {};
+
+      _this.add = function(key) {
+        if (_this.contains(key) ) {
+          throw 'dup key:' + key;
+        }
+        _map[key] = _size;
+        _size += 1;
+      };
+
+      _this.size = function() {
+        return _size;
+      };
+
+      _this.indexOf = function(key) {
+        return _map[key];
+      };
+
+      _this.contains = function(key) {
+        return typeof _map[key] != 'undefined';
+      };
+
+      return _this;
+    };
+
+    return _this;
+  };
+
+  var createDataURL = function(width, height, getPixel) {
+    var gif = gifImage(width, height);
+    for (var y = 0; y < height; y += 1) {
+      for (var x = 0; x < width; x += 1) {
+        gif.setPixel(x, y, getPixel(x, y) );
+      }
+    }
+
+    var b = byteArrayOutputStream();
+    gif.write(b);
+
+    var base64 = base64EncodeOutputStream();
+    var bytes = b.toByteArray();
+    for (var i = 0; i < bytes.length; i += 1) {
+      base64.writeByte(bytes[i]);
+    }
+    base64.flush();
+
+    return 'data:image/gif;base64,' + base64;
+  };
+
+  //---------------------------------------------------------------------
+  // returns qrcode function.
+
+  return qrcode;
+}();
+
+// multibyte support
+!function() {
+
+  qrcode.stringToBytesFuncs['UTF-8'] = function(s) {
+    // http://stackoverflow.com/questions/18729405/how-to-convert-utf8-string-to-byte-array
+    function toUTF8Array(str) {
+      var utf8 = [];
+      for (var i=0; i < str.length; i++) {
+        var charcode = str.charCodeAt(i);
+        if (charcode < 0x80) utf8.push(charcode);
+        else if (charcode < 0x800) {
+          utf8.push(0xc0 | (charcode >> 6),
+              0x80 | (charcode & 0x3f));
+        }
+        else if (charcode < 0xd800 || charcode >= 0xe000) {
+          utf8.push(0xe0 | (charcode >> 12),
+              0x80 | ((charcode>>6) & 0x3f),
+              0x80 | (charcode & 0x3f));
+        }
+        // surrogate pair
+        else {
+          i++;
+          // UTF-16 encodes 0x10000-0x10FFFF by
+          // subtracting 0x10000 and splitting the
+          // 20 bits of 0x0-0xFFFFF into two halves
+          charcode = 0x10000 + (((charcode & 0x3ff)<<10)
+            | (str.charCodeAt(i) & 0x3ff));
+          utf8.push(0xf0 | (charcode >>18),
+              0x80 | ((charcode>>12) & 0x3f),
+              0x80 | ((charcode>>6) & 0x3f),
+              0x80 | (charcode & 0x3f));
+        }
+      }
+      return utf8;
+    }
+    return toUTF8Array(s);
+  };
+
+}();
+
+(function (factory) {
+  if (typeof define === 'function' && define.amd) {
+      define([], factory);
+  } else if (typeof exports === 'object') {
+      module.exports = factory();
+  }
+}(function () {
+    return qrcode;
+}));
+
+</script>
+<script>
+const RECIPES = [{"id": "buffalo-chicken-meatball-subs", "file": "recipes/buffalo-chicken-meatball-subs.md", "title": "Buffalo Chicken Meatball Subs", "meal_type": ["Lunch", "Dinner"], "flavor": ["Spicy", "Savory"], "cuisine": ["American"], "complexity": "Easy", "prep_time": "20 min", "cook_time": "12 min", "prep_min": 20, "total_min": 32, "servings": 6, "source": "Mythical Kitchen (Josh)", "source_is_url": false, "nutrition": {"calories": 980, "protein": 66, "carbs": 72, "fat": 48}, "intro": "<p>Blue cheese and scallion turkey meatballs, tossed in buffalo sauce and piled into a hoagie roll with ranch and crunchy toppings.<\/p>", "shopping": [{"q": 3.0, "q2": null, "unit": "lb", "name": "ground turkey", "key": "ground turkey|wt", "raw": "3 lbs ground turkey"}, {"q": 0.75, "q2": null, "unit": "cup", "name": "breadcrumbs", "key": "breadcrumb|vol", "raw": "¾ cup breadcrumbs"}, {"q": 1.0, "q2": null, "unit": "tsp", "name": "salt", "key": "salt|vol", "raw": "1 tsp salt"}, {"q": 6.0, "q2": null, "unit": "oz", "name": "crumbled blue cheese", "key": "crumbled blue cheese|wt", "raw": "6 oz crumbled blue cheese"}, {"q": 0.25, "q2": null, "unit": "cup", "name": "buffalo sauce", "key": "buffalo sauce|vol", "raw": "¼ cup buffalo sauce, plus more for tossing"}, {"q": 1.0, "q2": null, "unit": "bunch", "name": "scallions", "key": "scallion|bunch", "raw": "1 bunch scallions"}, {"q": 3.0, "q2": null, "unit": "", "name": "eggs", "key": "egg|", "raw": "3 eggs"}, {"q": 3.0, "q2": null, "unit": "", "name": "garlic cloves", "key": "garlic clove|", "raw": "3 garlic cloves"}, {"q": null, "q2": null, "unit": "", "name": "Amoroso hoagie rolls (1 per sub)", "key": "amoroso hoagie roll|", "raw": "Amoroso hoagie rolls (1 per sub)"}, {"q": null, "q2": null, "unit": "", "name": "Shredded lettuce", "key": "shredded lettuce|", "raw": "Shredded lettuce"}, {"q": null, "q2": null, "unit": "", "name": "Sliced tomato", "key": "sliced tomato|", "raw": "Sliced tomato"}, {"q": null, "q2": null, "unit": "", "name": "Pickles", "key": "pickle|", "raw": "Pickles"}, {"q": null, "q2": null, "unit": "", "name": "Ranch dressing", "key": "ranch dressing|", "raw": "Ranch dressing"}], "ingredients": "<h4>Meatballs<\/h4>\n<ul>\n<li><span class=\"qty\" data-q=\"3.0\" data-q2=\"\">3<\/span> lbs ground turkey<\/li>\n<li><span class=\"qty\" data-q=\"0.75\" data-q2=\"\">¾<\/span> cup breadcrumbs<\/li>\n<li><span class=\"qty\" data-q=\"1.0\" data-q2=\"\">1<\/span> tsp salt<\/li>\n<li><span class=\"qty\" data-q=\"6.0\" data-q2=\"\">6<\/span> oz crumbled blue cheese<\/li>\n<li><span class=\"qty\" data-q=\"0.25\" data-q2=\"\">¼<\/span> cup buffalo sauce, plus more for tossing<\/li>\n<li><span class=\"qty\" data-q=\"1.0\" data-q2=\"\">1<\/span> bunch scallions<\/li>\n<li><span class=\"qty\" data-q=\"3.0\" data-q2=\"\">3<\/span> eggs<\/li>\n<li><span class=\"qty\" data-q=\"3.0\" data-q2=\"\">3<\/span> garlic cloves<\/li>\n<\/ul>\n<h4>Subs<\/h4>\n<ul>\n<li>Amoroso hoagie rolls (1 per sub)<\/li>\n<li>Shredded lettuce<\/li>\n<li>Sliced tomato<\/li>\n<li>Pickles<\/li>\n<li>Ranch dressing<\/li>\n<\/ul>", "equipment": "<ul>\n<li>Large mixing bowl<\/li>\n<li>Blender<\/li>\n<li>Ice cream scoop<\/li>\n<li>Baking sheet + silicone mat (or parchment paper)<\/li>\n<\/ul>", "instructions": "<ol>\n<li>Preheat the oven to 550°F.<\/li>\n<li>In a large bowl, combine the ground turkey, blue cheese, salt, and breadcrumbs.<\/li>\n<li>In a blender, blend the eggs, ¼ cup buffalo sauce, scallions, and garlic.<\/li>\n<li>Pour the wet mixture into the meat and mix until combined.<\/li>\n<li>Use an ice cream scoop to portion meatballs onto a lined baking sheet.<\/li>\n<li>Bake at 550°F for 12 minutes.<\/li>\n<li>Douse the meatballs in more buffalo sauce and toss to coat.<\/li>\n<li>Slice a hoagie roll in half, spread with ranch, and add lettuce, tomato, pickles, and meatballs.<\/li>\n<\/ol>", "nutrition_note": "<p><em>Per sub, assuming 6 subs, 93% lean turkey, a vinegar-based buffalo sauce (like Frank&#x27;s), and about 2 tbsp ranch. Meatballs alone are about 550 calories, 55 g protein, 12 g carbs, and 30 g fat per serving. Actual numbers vary by brand and portion.<\/em><\/p>", "notes": "<ul>\n<li>Despite the name, the recipe uses ground turkey. Ground chicken works as a swap.<\/li>\n<li>550°F is very hot; check them a couple minutes early the first time.<\/li>\n<li>Servings are a guess (the original doesn&#x27;t say). 3 lbs of meat makes roughly 6 hearty subs.<\/li>\n<\/ul>"}, {"id": "caprese-chicken-salad-bowls", "file": "recipes/caprese-chicken-salad-bowls.md", "title": "Caprese Chicken Salad Meal Prep Bowls", "meal_type": ["Lunch", "Dinner"], "flavor": ["Savory"], "cuisine": ["Italian"], "complexity": "Easy", "prep_time": "15 min", "cook_time": "25 min", "prep_min": 15, "total_min": 40, "servings": 4, "source": "https://sweetpeasandsaffron.com/caprese-chicken-salad-meal-prep-bowls/", "source_is_url": true, "nutrition": {"calories": 525, "protein": 39, "carbs": 32, "fat": 26}, "intro": "<p>Balsamic baked chicken over quinoa with cherry tomatoes, mini mozzarella, and fresh basil. Keeps 4 days in the fridge.<\/p>", "shopping": [{"q": 0.75, "q2": null, "unit": "cup", "name": "quinoa", "key": "quinoa|vol", "raw": "¾ cup quinoa, uncooked"}, {"q": 1.0, "q2": null, "unit": "tbsp", "name": "olive oil", "key": "olive oil|vol", "raw": "1 tbsp olive oil"}, {"q": 1.0, "q2": null, "unit": "tbsp", "name": "balsamic vinegar", "key": "balsamic vinegar|vol", "raw": "1 tbsp balsamic vinegar"}, {"q": 1.0, "q2": null, "unit": "lb", "name": "boneless skinless chicken breasts (about 2 large)", "key": "boneless skinless chicken breast|wt", "raw": "1 lb boneless skinless chicken breasts (about 2 large)"}, {"q": null, "q2": null, "unit": "", "name": "Salt and pepper", "key": "salt and pepper|", "raw": "Salt and pepper"}, {"q": 3.0, "q2": null, "unit": "cup", "name": "cherry tomatoes", "key": "cherry tomatoe|vol", "raw": "3 cups cherry tomatoes, halved"}, {"q": 1.0, "q2": null, "unit": "bunch", "name": "basil", "key": "basil|bunch", "raw": "1 bunch basil, leaves picked off the stems"}, {"q": 1.0, "q2": null, "unit": "cup", "name": "baby bocconcini (mini fresh mozzarella balls)", "key": "baby bocconcini|vol", "raw": "1 cup baby bocconcini (mini fresh mozzarella balls)"}, {"q": 3.0, "q2": null, "unit": "tbsp", "name": "olive oil", "key": "olive oil|vol", "raw": "3 tbsp olive oil"}, {"q": 3.0, "q2": null, "unit": "tbsp", "name": "balsamic vinegar", "key": "balsamic vinegar|vol", "raw": "3 tbsp balsamic vinegar"}, {"q": 1.0, "q2": null, "unit": "tbsp", "name": "maple syrup", "key": "maple syrup|vol", "raw": "1 tbsp maple syrup"}, {"q": 0.25, "q2": null, "unit": "tsp", "name": "Dijon mustard", "key": "dijon mustard|vol", "raw": "¼ tsp Dijon mustard"}, {"q": null, "q2": null, "unit": "", "name": "Salt and pepper", "key": "salt and pepper|", "raw": "Salt and pepper"}], "ingredients": "<h4>Bowls<\/h4>\n<ul>\n<li><span class=\"qty\" data-q=\"0.75\" data-q2=\"\">¾<\/span> cup quinoa, uncooked<\/li>\n<li><span class=\"qty\" data-q=\"1.0\" data-q2=\"\">1<\/span> tbsp olive oil<\/li>\n<li><span class=\"qty\" data-q=\"1.0\" data-q2=\"\">1<\/span> tbsp balsamic vinegar<\/li>\n<li><span class=\"qty\" data-q=\"1.0\" data-q2=\"\">1<\/span> lb boneless skinless chicken breasts (about 2 large)<\/li>\n<li>Salt and pepper<\/li>\n<li><span class=\"qty\" data-q=\"3.0\" data-q2=\"\">3<\/span> cups cherry tomatoes, halved<\/li>\n<li><span class=\"qty\" data-q=\"1.0\" data-q2=\"\">1<\/span> bunch basil, leaves picked off the stems<\/li>\n<li><span class=\"qty\" data-q=\"1.0\" data-q2=\"\">1<\/span> cup baby bocconcini (mini fresh mozzarella balls)<\/li>\n<\/ul>\n<h4>Balsamic Vinaigrette<\/h4>\n<ul>\n<li><span class=\"qty\" data-q=\"3.0\" data-q2=\"\">3<\/span> tbsp olive oil<\/li>\n<li><span class=\"qty\" data-q=\"3.0\" data-q2=\"\">3<\/span> tbsp balsamic vinegar<\/li>\n<li><span class=\"qty\" data-q=\"1.0\" data-q2=\"\">1<\/span> tbsp maple syrup<\/li>\n<li><span class=\"qty\" data-q=\"0.25\" data-q2=\"\">¼<\/span> tsp Dijon mustard<\/li>\n<li>Salt and pepper<\/li>\n<\/ul>", "equipment": "<ul>\n<li>Saucepan (for quinoa)<\/li>\n<li>Baking dish<\/li>\n<li>Cutting board and knife<\/li>\n<li>Dressing shaker or mason jar<\/li>\n<li>4 meal prep containers (2 cups or larger)<\/li>\n<li>Small condiment containers<\/li>\n<\/ul>", "instructions": "<ol>\n<li>Cook the quinoa according to the package and let it cool.<\/li>\n<li>Preheat the oven to 425°F.<\/li>\n<li>Toss the chicken with 1 tbsp olive oil and 1 tbsp balsamic, place in a baking dish, and season with salt and pepper.<\/li>\n<li>Bake about 25 minutes, until the thickest part reaches 165°F.<\/li>\n<li>Rest the chicken at least 10 minutes (ideally until cool), then slice against the grain.<\/li>\n<li>Shake the vinaigrette ingredients together in a jar and portion into small containers.<\/li>\n<li>Divide the quinoa, chicken, tomatoes, and bocconcini among 4 containers. Keep the basil separate if you can.<\/li>\n<li>To serve, tear the basil over the bowl, drizzle with dressing, and toss.<\/li>\n<\/ol>", "nutrition_note": "<p><em>Per bowl with dressing. The site didn&#x27;t show its own numbers. Actual numbers vary by brand and portion.<\/em><\/p>", "notes": "<ul>\n<li>Fridge up to 4 days. Don&#x27;t freeze.<\/li>\n<li>Add dressing only when eating, and keep basil dry (wrap in a paper towel) so it stays fresh.<\/li>\n<li>Tomatoes get soft and juicy by day 3–4, which works fine here.<\/li>\n<li>Swaps: chicken thighs, chickpeas, or tofu for the chicken; farro, rice, or barley for the quinoa; a tortilla or pita for a wrap.<\/li>\n<li>Low-carb: cauliflower rice instead of quinoa and a sugar-free sweetener instead of maple syrup.<\/li>\n<\/ul>"}, {"id": "classic-shepherds-pie", "file": "recipes/classic-shepherds-pie.md", "title": "Classic Shepherd's Pie", "meal_type": ["Dinner"], "flavor": ["Savory"], "cuisine": ["Irish"], "complexity": "Medium", "prep_time": "20 min", "cook_time": "55 min", "prep_min": 20, "total_min": 75, "servings": 6, "source": "https://www.thewholesomedish.com/the-best-classic-shepherds-pie/", "source_is_url": true, "nutrition": {"calories": 505, "protein": 22, "carbs": 36, "fat": 30}, "intro": "<p>Herby ground beef (or lamb) and veggies in a rich gravy, topped with buttery parmesan mashed potatoes and baked until golden.<\/p>", "shopping": [{"q": 2.0, "q2": null, "unit": "tbsp", "name": "olive oil", "key": "olive oil|vol", "raw": "2 tbsp olive oil"}, {"q": 1.0, "q2": null, "unit": "cup", "name": "yellow onion", "key": "yellow onion|vol", "raw": "1 cup yellow onion, chopped"}, {"q": 1.0, "q2": null, "unit": "lb", "name": "ground beef (90% lean)", "key": "ground beef|wt", "raw": "1 lb ground beef (90% lean), or ground lamb"}, {"q": 2.0, "q2": null, "unit": "tsp", "name": "dried parsley", "key": "dried parsley|vol", "raw": "2 tsp dried parsley"}, {"q": 1.0, "q2": null, "unit": "tsp", "name": "dried rosemary", "key": "dried rosemary|vol", "raw": "1 tsp dried rosemary"}, {"q": 1.0, "q2": null, "unit": "tsp", "name": "dried thyme", "key": "dried thyme|vol", "raw": "1 tsp dried thyme"}, {"q": 0.5, "q2": null, "unit": "tsp", "name": "salt", "key": "salt|vol", "raw": "½ tsp salt"}, {"q": 0.5, "q2": null, "unit": "tsp", "name": "black pepper", "key": "black pepper|vol", "raw": "½ tsp black pepper"}, {"q": 1.0, "q2": null, "unit": "tbsp", "name": "Worcestershire sauce", "key": "worcestershire sauce|vol", "raw": "1 tbsp Worcestershire sauce"}, {"q": 2.0, "q2": null, "unit": "", "name": "garlic cloves", "key": "garlic clove|", "raw": "2 garlic cloves, minced"}, {"q": 2.0, "q2": null, "unit": "tbsp", "name": "all-purpose flour", "key": "all purpose flour|vol", "raw": "2 tbsp all-purpose flour"}, {"q": 2.0, "q2": null, "unit": "tbsp", "name": "tomato paste", "key": "tomato paste|vol", "raw": "2 tbsp tomato paste"}, {"q": 1.0, "q2": null, "unit": "cup", "name": "beef broth", "key": "beef broth|vol", "raw": "1 cup beef broth"}, {"q": 1.0, "q2": null, "unit": "cup", "name": "frozen peas and carrots", "key": "frozen peas and carrot|vol", "raw": "1 cup frozen peas and carrots"}, {"q": 0.5, "q2": null, "unit": "cup", "name": "frozen corn", "key": "frozen corn|vol", "raw": "½ cup frozen corn"}, {"q": 1.5, "q2": 2.0, "unit": "lb", "name": "russet potatoes (about 2 large)", "key": "russet potatoe|wt", "raw": "1 ½–2 lb russet potatoes (about 2 large), peeled and cut into 1-inch cubes"}, {"q": 8.0, "q2": null, "unit": "tbsp", "name": "unsalted butter (1 stick)", "key": "unsalted butter|vol", "raw": "8 tbsp unsalted butter (1 stick)"}, {"q": 0.3333333333333333, "q2": null, "unit": "cup", "name": "half-and-half", "key": "half and half|vol", "raw": "⅓ cup half-and-half"}, {"q": 0.5, "q2": null, "unit": "tsp", "name": "garlic powder", "key": "garlic powder|vol", "raw": "½ tsp garlic powder"}, {"q": 0.5, "q2": null, "unit": "tsp", "name": "salt", "key": "salt|vol", "raw": "½ tsp salt"}, {"q": 0.25, "q2": null, "unit": "tsp", "name": "black pepper", "key": "black pepper|vol", "raw": "¼ tsp black pepper"}, {"q": 0.25, "q2": null, "unit": "cup", "name": "grated parmesan cheese", "key": "grated parmesan cheese|vol", "raw": "¼ cup grated parmesan cheese"}], "ingredients": "<h4>Meat Filling<\/h4>\n<ul>\n<li><span class=\"qty\" data-q=\"2.0\" data-q2=\"\">2<\/span> tbsp olive oil<\/li>\n<li><span class=\"qty\" data-q=\"1.0\" data-q2=\"\">1<\/span> cup yellow onion, chopped<\/li>\n<li><span class=\"qty\" data-q=\"1.0\" data-q2=\"\">1<\/span> lb ground beef (90% lean), or ground lamb<\/li>\n<li><span class=\"qty\" data-q=\"2.0\" data-q2=\"\">2<\/span> tsp dried parsley<\/li>\n<li><span class=\"qty\" data-q=\"1.0\" data-q2=\"\">1<\/span> tsp dried rosemary<\/li>\n<li><span class=\"qty\" data-q=\"1.0\" data-q2=\"\">1<\/span> tsp dried thyme<\/li>\n<li><span class=\"qty\" data-q=\"0.5\" data-q2=\"\">½<\/span> tsp salt<\/li>\n<li><span class=\"qty\" data-q=\"0.5\" data-q2=\"\">½<\/span> tsp black pepper<\/li>\n<li><span class=\"qty\" data-q=\"1.0\" data-q2=\"\">1<\/span> tbsp Worcestershire sauce<\/li>\n<li><span class=\"qty\" data-q=\"2.0\" data-q2=\"\">2<\/span> garlic cloves, minced<\/li>\n<li><span class=\"qty\" data-q=\"2.0\" data-q2=\"\">2<\/span> tbsp all-purpose flour<\/li>\n<li><span class=\"qty\" data-q=\"2.0\" data-q2=\"\">2<\/span> tbsp tomato paste<\/li>\n<li><span class=\"qty\" data-q=\"1.0\" data-q2=\"\">1<\/span> cup beef broth<\/li>\n<li><span class=\"qty\" data-q=\"1.0\" data-q2=\"\">1<\/span> cup frozen peas and carrots<\/li>\n<li><span class=\"qty\" data-q=\"0.5\" data-q2=\"\">½<\/span> cup frozen corn<\/li>\n<\/ul>\n<h4>Potato Topping<\/h4>\n<ul>\n<li><span class=\"qty\" data-q=\"1.5\" data-q2=\"2.0\">1 ½–2<\/span> lb russet potatoes (about 2 large), peeled and cut into 1-inch cubes<\/li>\n<li><span class=\"qty\" data-q=\"8.0\" data-q2=\"\">8<\/span> tbsp unsalted butter (1 stick)<\/li>\n<li><span class=\"qty\" data-q=\"0.3333333333333333\" data-q2=\"\">⅓<\/span> cup half-and-half<\/li>\n<li><span class=\"qty\" data-q=\"0.5\" data-q2=\"\">½<\/span> tsp garlic powder<\/li>\n<li><span class=\"qty\" data-q=\"0.5\" data-q2=\"\">½<\/span> tsp salt<\/li>\n<li><span class=\"qty\" data-q=\"0.25\" data-q2=\"\">¼<\/span> tsp black pepper<\/li>\n<li><span class=\"qty\" data-q=\"0.25\" data-q2=\"\">¼<\/span> cup grated parmesan cheese<\/li>\n<\/ul>", "equipment": "<ul>\n<li>Large skillet<\/li>\n<li>Wooden spoon<\/li>\n<li>Large pot<\/li>\n<li>Colander<\/li>\n<li>Potato masher<\/li>\n<li>9x9-inch (or 7x11-inch) baking dish<\/li>\n<li>Rimmed baking sheet (optional, to catch drips)<\/li>\n<\/ul>", "instructions": "<ol>\n<li>Heat the oil in a large skillet over medium-high heat for 2 minutes. Add the onion and cook 5 minutes, stirring occasionally.<\/li>\n<li>Add the beef, breaking it up with a wooden spoon. Add the parsley, rosemary, thyme, salt, and pepper and cook 6–8 minutes, until browned.<\/li>\n<li>Stir in the Worcestershire sauce and garlic and cook 1 minute.<\/li>\n<li>Stir in the flour and tomato paste until no clumps of tomato paste remain.<\/li>\n<li>Add the broth, peas and carrots, and corn. Bring to a boil, then simmer 5 minutes, stirring occasionally. Set aside.<\/li>\n<li>Preheat the oven to 400°F.<\/li>\n<li>Cover the potatoes with water in a large pot, bring to a boil, then simmer 10–15 minutes until fork-tender.<\/li>\n<li>Drain, return the potatoes to the hot pot, and let sit 1 minute so the extra water steams off.<\/li>\n<li>Add the butter, half-and-half, garlic powder, salt, and pepper and mash until smooth. Stir in the parmesan.<\/li>\n<li>Spread the meat mixture in the baking dish, then spread the mashed potatoes evenly on top.<\/li>\n<li>If the dish is very full, set it on a rimmed baking sheet. Bake uncovered at 400°F for 25–30 minutes.<\/li>\n<li>Let cool 15 minutes before serving.<\/li>\n<\/ol>", "nutrition_note": "<p><em>Per serving, assuming 6 servings with 90% lean beef and 1 ¾ lb potatoes. The site didn&#x27;t show its own numbers. About half the fat comes from the stick of butter; using 4 tbsp saves about 70 calories per serving.<\/em><\/p>", "notes": "<ul>\n<li>Shepherd&#x27;s pie is traditionally made with lamb; with beef it&#x27;s technically &quot;cottage pie.&quot; Both work.<\/li>\n<li>Make ahead: prepare the filling, the potatoes, or the whole assembled dish, cover, and refrigerate. Bake within 3 days. Take it out of the fridge about 20 minutes before baking.<\/li>\n<li>Servings are an estimate (the site doesn&#x27;t list them); a 9x9 dish feeds about 6.<\/li>\n<li>Good with roasted broccoli on the side.<\/li>\n<\/ul>"}, {"id": "josh-protein-bars", "file": "recipes/josh-protein-bars.md", "title": "Josh's Protein Bars", "meal_type": ["Breakfast", "Snack"], "flavor": ["Savory"], "cuisine": ["American"], "complexity": "Easy", "prep_time": "15 min", "cook_time": "50 min", "prep_min": 15, "total_min": 65, "servings": 5, "source": "Mythical Kitchen (Josh)", "source_is_url": false, "nutrition": {"calories": 760, "protein": 51, "carbs": 8, "fat": 58}, "intro": "<p>A baked egg, sausage, and veggie slab cut into bars. Good for meal prep: make once, wrap, and grab all week.<\/p>", "shopping": [{"q": 1.5, "q2": null, "unit": "lb", "name": "sausage", "key": "sausage|wt", "raw": "1 ½ lbs sausage"}, {"q": 15.0, "q2": null, "unit": "", "name": "eggs", "key": "egg|", "raw": "15 eggs"}, {"q": 10.0, "q2": null, "unit": "", "name": "button mushrooms", "key": "button mushroom|", "raw": "10 button mushrooms"}, {"q": 20.0, "q2": null, "unit": "", "name": "cherry tomatoes", "key": "cherry tomatoe|", "raw": "20 cherry tomatoes, sliced"}, {"q": 1.0, "q2": null, "unit": "container", "name": "(5 oz) baby spinach", "key": "baby spinach|container", "raw": "1 container (5 oz) baby spinach"}, {"q": 2.0, "q2": null, "unit": "cup", "name": "shredded cheddar cheese", "key": "shredded cheddar cheese|vol", "raw": "2 cups shredded cheddar cheese"}, {"q": null, "q2": null, "unit": "", "name": "Salt and pepper", "key": "salt and pepper|", "raw": "Salt and pepper, to taste"}], "ingredients": "<ul>\n<li><span class=\"qty\" data-q=\"1.5\" data-q2=\"\">1 ½<\/span> lbs sausage<\/li>\n<li><span class=\"qty\" data-q=\"15.0\" data-q2=\"\">15<\/span> eggs<\/li>\n<li><span class=\"qty\" data-q=\"10.0\" data-q2=\"\">10<\/span> button mushrooms<\/li>\n<li><span class=\"qty\" data-q=\"20.0\" data-q2=\"\">20<\/span> cherry tomatoes, sliced<\/li>\n<li><span class=\"qty\" data-q=\"1.0\" data-q2=\"\">1<\/span> container (5 oz) baby spinach<\/li>\n<li><span class=\"qty\" data-q=\"2.0\" data-q2=\"\">2<\/span> cups shredded cheddar cheese<\/li>\n<li>Salt and pepper, to taste<\/li>\n<\/ul>", "equipment": "<ul>\n<li>Sauté pan<\/li>\n<li>Silicone spatula<\/li>\n<li>Large mixing bowl<\/li>\n<li>Whisk<\/li>\n<li>Deep baking dish<\/li>\n<li>Parchment paper<\/li>\n<li>Cutting board<\/li>\n<li>Knife<\/li>\n<\/ul>", "instructions": "<ol>\n<li>Preheat the oven to 350°F.<\/li>\n<li>Heat a large sauté pan on high heat and brown the sausage.<\/li>\n<li>Add the mushrooms and sauté until browned, about 3 minutes.<\/li>\n<li>Add the spinach and cook 1 more minute, until slightly browned.<\/li>\n<li>Add the sliced cherry tomatoes, stir, and take the pan off the heat.<\/li>\n<li>In a large bowl, whisk the eggs, salt, pepper, and cheese together.<\/li>\n<li>Add the sausage and vegetables to the egg mixture and whisk to combine.<\/li>\n<li>Line a deep baking dish with parchment paper and pour in the egg mixture.<\/li>\n<li>Bake at 350°F for 40 minutes, until set.<\/li>\n<li>Let cool for 20 minutes, then turn out, cut into 5 portions, and wrap.<\/li>\n<\/ol>", "nutrition_note": "<p><em>Estimated assuming pork sausage with some fat rendered off; actual numbers vary by brand and portion. Turkey sausage would cut roughly 150 calories and 18 g fat per bar.<\/em><\/p>", "notes": "<ul>\n<li>Cook time includes ~10 min on the stovetop plus 40 min baking. Allow 20 min extra for cooling.<\/li>\n<li>The original doesn&#x27;t say to slice the mushrooms, but slicing them helps them brown.<\/li>\n<\/ul>"}, {"id": "zuppa-toscana", "file": "recipes/zuppa-toscana.md", "title": "Zuppa Toscana", "meal_type": ["Lunch", "Dinner"], "flavor": ["Savory", "Spicy"], "cuisine": ["Italian"], "complexity": "Easy", "prep_time": "10 min", "cook_time": "30 min", "prep_min": 10, "total_min": 40, "servings": 4, "source": "https://www.lecremedelacrumb.com/easy-olive-garden-zuppa-toscana-soup/", "source_is_url": true, "nutrition": {"calories": 1030, "protein": 27, "carbs": 43, "fat": 85}, "intro": "<p>A creamy potato, sausage, and kale soup in the style of the Olive Garden classic.<\/p>", "shopping": [{"q": 1.0, "q2": null, "unit": "lb", "name": "spicy Italian ground sausage (use mild for kids)", "key": "spicy italian ground sausage|wt", "raw": "1 lb spicy Italian ground sausage (use mild for kids)"}, {"q": 4.0, "q2": null, "unit": "tbsp", "name": "butter", "key": "butter|vol", "raw": "4 tbsp butter"}, {"q": 0.5, "q2": null, "unit": "", "name": "white onion", "key": "white onion|", "raw": "½ white onion, diced"}, {"q": 1.0, "q2": null, "unit": "tbsp", "name": "minced garlic", "key": "minced garlic|vol", "raw": "1 tbsp minced garlic"}, {"q": 6.0, "q2": null, "unit": "cup", "name": "chicken broth", "key": "chicken broth|vol", "raw": "6 cups chicken broth"}, {"q": 2.0, "q2": null, "unit": "cup", "name": "water", "key": "water|vol", "raw": "2 cups water"}, {"q": 4.0, "q2": 5.0, "unit": "", "name": "yellow potatoes", "key": "yellow potatoe|", "raw": "4–5 yellow potatoes, cut into 1-inch pieces"}, {"q": 3.0, "q2": null, "unit": "tsp", "name": "salt", "key": "salt|vol", "raw": "3 tsp salt, or to taste"}, {"q": 1.0, "q2": null, "unit": "tsp", "name": "black pepper", "key": "black pepper|vol", "raw": "1 tsp black pepper"}, {"q": 2.0, "q2": null, "unit": "cup", "name": "heavy cream", "key": "heavy cream|vol", "raw": "2 cups heavy cream"}, {"q": 4.0, "q2": null, "unit": "cup", "name": "chopped kale", "key": "chopped kale|vol", "raw": "4 cups chopped kale"}, {"q": null, "q2": null, "unit": "", "name": "Optional toppings: chopped bacon or bacon bits", "key": "optional toppings chopped bacon or bacon bit|", "raw": "Optional toppings: chopped bacon or bacon bits, grated parmesan"}], "ingredients": "<ul>\n<li><span class=\"qty\" data-q=\"1.0\" data-q2=\"\">1<\/span> lb spicy Italian ground sausage (use mild for kids)<\/li>\n<li><span class=\"qty\" data-q=\"4.0\" data-q2=\"\">4<\/span> tbsp butter<\/li>\n<li><span class=\"qty\" data-q=\"0.5\" data-q2=\"\">½<\/span> white onion, diced<\/li>\n<li><span class=\"qty\" data-q=\"1.0\" data-q2=\"\">1<\/span> tbsp minced garlic<\/li>\n<li><span class=\"qty\" data-q=\"6.0\" data-q2=\"\">6<\/span> cups chicken broth<\/li>\n<li><span class=\"qty\" data-q=\"2.0\" data-q2=\"\">2<\/span> cups water<\/li>\n<li><span class=\"qty\" data-q=\"4.0\" data-q2=\"5.0\">4–5<\/span> yellow potatoes, cut into 1-inch pieces<\/li>\n<li><span class=\"qty\" data-q=\"3.0\" data-q2=\"\">3<\/span> tsp salt, or to taste<\/li>\n<li><span class=\"qty\" data-q=\"1.0\" data-q2=\"\">1<\/span> tsp black pepper<\/li>\n<li><span class=\"qty\" data-q=\"2.0\" data-q2=\"\">2<\/span> cups heavy cream<\/li>\n<li><span class=\"qty\" data-q=\"4.0\" data-q2=\"\">4<\/span> cups chopped kale<\/li>\n<li>Optional toppings: chopped bacon or bacon bits, grated parmesan<\/li>\n<\/ul>", "equipment": "<ul>\n<li>Large pot<\/li>\n<li>Slotted spoon<\/li>\n<li>Plate<\/li>\n<li>Cutting board<\/li>\n<li>Knife<\/li>\n<\/ul>", "instructions": "<ol>\n<li>Brown the sausage in a large pot, about 5–6 minutes.<\/li>\n<li>Lift the sausage out with a slotted spoon onto a plate and set aside.<\/li>\n<li>In the same pot over medium heat, melt the butter and cook the onion until translucent.<\/li>\n<li>Add the garlic and cook about 1 minute, until fragrant.<\/li>\n<li>Add the broth, water, potatoes, salt, and pepper. Bring to a boil and cook until the potatoes are tender.<\/li>\n<li>Stir in the kale and heavy cream, then return the sausage to the pot.<\/li>\n<li>Taste and adjust salt and pepper.<\/li>\n<li>Serve topped with parmesan and/or bacon if you like.<\/li>\n<\/ol>", "nutrition_note": "<p><em>Estimated for 4 large bowls (about 3 cups each), without toppings. The site lists 833 calories and 16 g carbs, but that seems to undercount the potatoes. Using half-and-half instead of cream saves about 200 calories and 30 g fat per bowl; it&#x27;s also very salty (3 tsp salt plus broth), so start with less.<\/em><\/p>", "notes": "<ul>\n<li>Using plain (non-Italian) sausage? Add 1 tsp dried Italian seasoning or Herbes de Provence and a pinch of red pepper flakes.<\/li>\n<li>Instant Pot: sauté sausage and onion, pressure cook everything except kale and cream on High for ~10 min, quick release, then stir in kale and cream and let sit a few minutes.<\/li>\n<li>Freezes for 2–3 weeks.<\/li>\n<li>Lighter version: poultry sausage and half-and-half.<\/li>\n<\/ul>"}];
+
+const TIME_BUCKETS = [
+  { label: "Under 15 min", test: m => m < 15 },
+  { label: "15–30 min", test: m => m >= 15 && m <= 30 },
+  { label: "Over 30 min", test: m => m > 30 },
+];
+const ORDER = {
+  meal_type: ["Breakfast","Lunch","Dinner","Dessert","Snack","Drinks","Alcoholic drinks"],
+  complexity: ["Easy","Medium","Hard"],
+};
+const GROUPS = [
+  { key: "meal_type", label: "Meal" },
+  { key: "flavor", label: "Flavor" },
+  { key: "cuisine", label: "Cuisine" },
+  { key: "complexity", label: "Difficulty" },
+  { key: "prep", label: "Prep time" },
+];
+const state = { q: "", sel: {} };
+GROUPS.forEach(g => state.sel[g.key] = new Set());
+
+const valuesOf = (r, key) => key === "prep"
+  ? TIME_BUCKETS.filter(b => b.test(r.prep_min)).map(b => b.label)
+  : [].concat(r[key] || []).filter(Boolean);
+
+function options(key) {
+  if (key === "prep") return TIME_BUCKETS.map(b => b.label).filter(l => RECIPES.some(r => valuesOf(r, key).includes(l)));
+  const set = new Set(); RECIPES.forEach(r => valuesOf(r, key).forEach(v => set.add(v)));
+  const pref = ORDER[key] || [];
+  return [...set].sort((a, b) => {
+    const ia = pref.indexOf(a), ib = pref.indexOf(b);
+    if (ia >= 0 || ib >= 0) return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+    return a.localeCompare(b);
+  });
+}
+
+function buildFilters() {
+  const box = document.getElementById("filters");
+  GROUPS.forEach(g => {
+    const opts = options(g.key);
+    if (!opts.length) return;
+    const wrap = document.createElement("div"); wrap.className = "group";
+    wrap.innerHTML = `<span class="group-label">${g.label}</span>`;
+    opts.forEach(o => {
+      const b = document.createElement("button");
+      b.className = "chip"; b.textContent = o; b.setAttribute("aria-pressed", "false");
+      b.onclick = () => {
+        const s = state.sel[g.key];
+        s.has(o) ? s.delete(o) : s.add(o);
+        b.setAttribute("aria-pressed", s.has(o));
+        render();
+      };
+      wrap.appendChild(b);
+    });
+    box.appendChild(wrap);
+  });
+}
+
+const text = h => { const d = document.createElement("div"); d.innerHTML = h; return d.textContent; };
+const searchIndex = new Map(RECIPES.map(r => [r.id,
+  [r.title, r.cuisine.join(" "), r.meal_type.join(" "), r.flavor.join(" "), text(r.ingredients), text(r.intro)].join(" ").toLowerCase()]));
+
+function matches(r) {
+  const words = state.q.toLowerCase().split(/\s+/).filter(Boolean);
+  const idx = searchIndex.get(r.id);
+  if (!words.every(w => idx.includes(w))) return false;
+  return GROUPS.every(g => {
+    const s = state.sel[g.key];
+    return !s.size || valuesOf(r, g.key).some(v => s.has(v));
+  });
+}
+
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const g = v => v == null || v === "" ? "–" : v;
+
+function card(r) {
+  const n = r.nutrition;
+  const b = document.createElement("div");
+  b.className = "card"; b.tabIndex = 0; b.setAttribute("role", "button");
+  const inPlan = planHas(r.id);
+  b.innerHTML = `
+    <div class="card-top"><h3>${esc(r.title)}</h3>
+      <button class="planbtn ${inPlan ? "on" : ""}" title="${inPlan ? "Remove from meal plan" : "Add to meal plan"}">${inPlan ? "✓ Planned" : "+ Plan"}</button></div>
+    <div class="tags">${[...r.meal_type, ...r.flavor, ...r.cuisine].map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div>
+    <div class="meta"><span>Prep ${esc(r.prep_time)}</span><span>Cook ${esc(r.cook_time)}</span><span>${esc(r.complexity)}</span><span>Serves ${esc(r.servings)}</span></div>
+    <div class="macros">
+      <div><b>${g(n.calories)}</b><span>Cal</span></div>
+      <div><b>${g(n.protein)}g</b><span>Protein</span></div>
+      <div><b>${g(n.carbs)}g</b><span>Carbs</span></div>
+      <div><b>${g(n.fat)}g</b><span>Fat</span></div>
+    </div>`;
+  b.onclick = () => open(r.id);
+  b.onkeydown = e => { if (e.key === "Enter" && e.target === b) open(r.id); };
+  b.querySelector(".planbtn").onclick = e => {
+    e.stopPropagation();
+    planHas(r.id) ? removeFromPlan(r.id) : addToPlan(r.id, Number(r.servings) || 1);
+  };
+  return b;
+}
+
+function render() {
+  const list = RECIPES.filter(matches).sort((a, b) => a.title.localeCompare(b.title));
+  const grid = document.getElementById("grid");
+  grid.replaceChildren(...list.map(card));
+  document.getElementById("empty").hidden = list.length > 0;
+  document.getElementById("showing").textContent =
+    list.length === RECIPES.length ? `All ${list.length} recipes` : `Showing ${list.length} of ${RECIPES.length}`;
+  const active = state.q || GROUPS.some(x => state.sel[x.key].size);
+  document.getElementById("clear").hidden = !active;
+}
+
+function open(id) {
+  const r = RECIPES.find(x => x.id === id); if (!r) return;
+  const n = r.nutrition;
+  const src = r.source ? (r.source_is_url
+    ? `Source: <a href="${esc(r.source)}" target="_blank" rel="noopener">${esc(r.source)}</a>`
+    : `Source: ${esc(r.source)}`) : "";
+  document.getElementById("detail").innerHTML = `
+    <button class="close" aria-label="Close" onclick="closeDetail()">×</button>
+    <h2>${esc(r.title)}</h2>
+    <div class="tags">${[...r.meal_type, ...r.flavor, ...r.cuisine].map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div>
+    <div class="intro">${r.intro}</div>
+    <div class="facts">
+      <div class="fact"><span>Prep</span>${esc(r.prep_time)}</div>
+      <div class="fact"><span>Cook</span>${esc(r.cook_time)}</div>
+      <div class="fact"><span>Servings</span>
+        <div class="stepper">
+          <button aria-label="Fewer servings" onclick="setServings(cur.servings - 1)">−</button>
+          <input id="serv" type="number" min="1" max="99" value="${esc(r.servings)}" aria-label="Servings" oninput="setServings(+this.value, true)">
+          <button aria-label="More servings" onclick="setServings(cur.servings + 1)">+</button>
+        </div></div>
+      <div class="fact"><span>Difficulty</span>${esc(r.complexity)}</div>
+    </div>
+    <div class="cols">
+      <section><h3>Ingredients</h3><p class="scale-note" id="scaleNote" hidden></p><div id="ingr">${r.ingredients}</div></section>
+      <section><h3>Equipment</h3>${r.equipment}</section>
+    </div>
+    <section><h3>Instructions</h3>${r.instructions}</section>
+    <section><h3>Nutrition per serving (estimated)</h3>
+      <div class="nutri">
+        <div><b>${g(n.calories)}</b><span>Calories</span></div>
+        <div><b>${g(n.protein)}g</b><span>Protein</span></div>
+        <div><b>${g(n.carbs)}g</b><span>Carbs</span></div>
+        <div><b>${g(n.fat)}g</b><span>Fat</span></div>
+      </div>
+      <div class="small">${r.nutrition_note}</div>
+    </section>
+    ${r.notes ? `<section><h3>Notes</h3>${r.notes}</section>` : ""}
+    <div class="src">${src}</div>
+    <div class="actions"><button class="btn primary" id="planAction"></button><button class="btn" onclick="window.print()">Print recipe</button></div>`;
+  const planned = plan.find(p => p.id === r.id);
+  cur = { id: r.id, base: Number(r.servings) || 1, servings: planned ? planned.servings : (Number(r.servings) || 1) };
+  setServings(cur.servings);
+  document.getElementById("overlay").classList.add("open");
+  document.getElementById("overlay").scrollTop = 0;
+  document.body.style.overflow = "hidden";
+  if (location.hash !== "#" + id) history.replaceState(null, "", "#" + id);
+}
+let cur = { base: 1, servings: 1 };
+const FR = [[0,""],[1/8,"⅛"],[1/4,"¼"],[1/3,"⅓"],[3/8,"⅜"],[1/2,"½"],[5/8,"⅝"],[2/3,"⅔"],[3/4,"¾"],[7/8,"⅞"],[1,""]];
+function fmt(x) {
+  if (x >= 10) return String(Math.round(x));
+  let whole = Math.floor(x), rest = x - whole, best = FR[0];
+  for (const f of FR) if (Math.abs(rest - f[0]) < Math.abs(rest - best[0])) best = f;
+  if (best[0] === 1) { whole += 1; best = FR[0]; }
+  if (!whole && !best[1]) return x > 0 ? "⅛" : "0";
+  return whole ? (best[1] ? `${whole} ${best[1]}` : String(whole)) : best[1];
+}
+function setServings(n, fromInput) {
+  if (!Number.isFinite(n) || n < 1) { if (fromInput) return; n = 1; }
+  n = Math.min(99, Math.round(n));
+  cur.servings = n;
+  const input = document.getElementById("serv");
+  if (input && !fromInput) input.value = n;
+  const f = n / cur.base, scaled = f !== 1;
+  document.querySelectorAll("#ingr .qty").forEach(el => {
+    if (!el.dataset.orig) el.dataset.orig = el.textContent;
+    if (!scaled) { el.textContent = el.dataset.orig; el.classList.remove("scaled"); return; }
+    const a = fmt(+el.dataset.q * f), b = el.dataset.q2 ? fmt(+el.dataset.q2 * f) : "";
+    el.textContent = b ? `${a}–${b}` : a;
+    el.classList.add("scaled");
+  });
+  updatePlanAction();
+  const note = document.getElementById("scaleNote");
+  note.hidden = !scaled;
+  note.textContent = scaled ? `Scaled ×${+f.toFixed(2)} from ${cur.base} servings. Amounts written in the steps are for the original recipe; nutrition is still per serving.` : "";
+}
+/* ---------- meal plan ---------- */
+const STORE = "cookbook.mealplan.v1";
+let plan = [], checked = {};
+try {
+  const saved = JSON.parse(localStorage.getItem(STORE) || "{}");
+  plan = (saved.plan || []).filter(p => RECIPES.some(r => r.id === p.id));
+  checked = saved.checked || {};
+} catch (e) {}
+function savePlan() {
+  try { localStorage.setItem(STORE, JSON.stringify({ plan, checked })); } catch (e) {}
+}
+const planHas = id => plan.some(p => p.id === id);
+function addToPlan(id, servings) {
+  const p = plan.find(x => x.id === id);
+  if (p) p.servings = servings; else plan.push({ id, servings });
+  planChanged();
+}
+function removeFromPlan(id) { plan = plan.filter(p => p.id !== id); planChanged(); }
+function planChanged() { savePlan(); render(); renderPlan(); updatePlanAction(); }
+function updatePlanAction() {
+  const btn = document.getElementById("planAction");
+  if (!btn || !cur.id) return;
+  const p = plan.find(x => x.id === cur.id);
+  if (p && p.servings === cur.servings) {
+    btn.textContent = "✓ In meal plan (remove)";
+    btn.onclick = () => removeFromPlan(cur.id);
+  } else {
+    btn.textContent = p ? `Update meal plan to ${cur.servings} servings` : `Add to meal plan (${cur.servings} servings)`;
+    btn.onclick = () => addToPlan(cur.id, cur.servings);
+  }
+}
+
+const PLURAL = { cup: "cups", clove: "cloves", bunch: "bunches", can: "cans", container: "containers", package: "packages",
+  slice: "slices", stick: "sticks", head: "heads", pinch: "pinches", dash: "dashes" };
+// tsp/tbsp/cup are added together in teaspoons, oz/lb in ounces, then shown in the handiest unit
+const TO_BASE = { tsp: 1, tbsp: 3, cup: 48, oz: 1, lb: 16 };
+const GROUP = { tsp: "vol", tbsp: "vol", cup: "vol", oz: "wt", lb: "wt" };
+function bestUnit(group, base) {
+  if (group === "vol") return base >= 12 ? ["cup", 48] : base >= 3 ? ["tbsp", 3] : ["tsp", 1];
+  if (group === "wt") return base >= 16 ? ["lb", 16] : ["oz", 1];
+  return null;
+}
+const unitText = (u, amt) => !u ? "" : (amt > 1 && PLURAL[u] ? PLURAL[u] : u);
+
+function shoppingList() {
+  const items = new Map();
+  plan.forEach(p => {
+    const r = RECIPES.find(x => x.id === p.id); if (!r) return;
+    const f = p.servings / (Number(r.servings) || 1);
+    (r.shopping || []).forEach(i => {
+      let it = items.get(i.key);
+      if (!it) items.set(i.key, it = { key: i.key, name: i.name, unit: i.unit, group: GROUP[i.unit], lo: 0, hi: 0, hasQty: false, ranged: false, from: [] });
+      if (i.q != null) {
+        const m = it.group ? TO_BASE[i.unit] : 1;
+        it.hasQty = true;
+        it.lo += i.q * f * m;
+        it.hi += (i.q2 != null ? i.q2 : i.q) * f * m;
+        if (i.q2 != null) it.ranged = true;
+      }
+      if (!it.from.includes(r.title)) it.from.push(r.title);
+    });
+  });
+  return [...items.values()].sort((a, b) => a.name.toLowerCase().replace(/^\(.*?\)\s*/, "").localeCompare(b.name.toLowerCase().replace(/^\(.*?\)\s*/, "")));
+}
+
+function renderPlan() {
+  document.getElementById("planCount").textContent = plan.length || "";
+  const list = document.getElementById("planList");
+  if (!plan.length) {
+    list.innerHTML = `<p class="small">No meals planned yet. Tap <b>+ Plan</b> on any recipe to add it here.</p>`;
+    document.getElementById("planTotals").textContent = "";
+    document.getElementById("shopList").innerHTML = `<li class="small" style="padding:8px 0">Your shopping list will appear here.</li>`;
+    return;
+  }
+  list.innerHTML = "";
+  let total = 0, cals = 0;
+  plan.forEach(p => {
+    const r = RECIPES.find(x => x.id === p.id);
+    total += p.servings; cals += (r.nutrition.calories || 0) * p.servings;
+    const row = document.createElement("div"); row.className = "prow";
+    row.innerHTML = `
+      <div class="pt"><button>${esc(r.title)}</button><small>${r.nutrition.calories ? r.nutrition.calories + " cal per serving" : ""}</small></div>
+      <div class="stepper">
+        <button aria-label="Fewer servings">−</button>
+        <input type="number" min="1" max="99" value="${p.servings}" aria-label="Servings for ${esc(r.title)}">
+        <button aria-label="More servings">+</button>
+      </div>
+      <button class="x" aria-label="Remove ${esc(r.title)}">×</button>`;
+    const [minus, plus] = row.querySelectorAll(".stepper button");
+    const input = row.querySelector("input");
+    const set = n => { if (Number.isFinite(n) && n >= 1) { p.servings = Math.min(99, Math.round(n)); savePlan(); renderShop(); renderTotals(); } };
+    minus.onclick = () => { set(p.servings - 1); input.value = p.servings; };
+    plus.onclick = () => { set(p.servings + 1); input.value = p.servings; };
+    input.oninput = () => set(+input.value);
+    row.querySelector(".pt button").onclick = () => open(r.id);
+    row.querySelector(".x").onclick = () => removeFromPlan(r.id);
+    list.appendChild(row);
+  });
+  renderTotals();
+  renderShop();
+}
+function renderTotals() {
+  const total = plan.reduce((s, p) => s + p.servings, 0);
+  document.getElementById("planTotals").textContent =
+    `${plan.length} recipe${plan.length === 1 ? "" : "s"} · ${total} servings total`;
+}
+function shopItems() {
+  return shoppingList().map(it => {
+    if (it.group && it.hasQty) {
+      const [u, d] = bestUnit(it.group, it.hi);
+      it.unit = u; it.lo /= d; it.hi /= d;
+    }
+    it.amt = !it.hasQty ? "" : (it.ranged && Math.abs(it.hi - it.lo) > 1e-9 ? `${fmt(it.lo)}–${fmt(it.hi)}` : fmt(it.lo));
+    it.unitLabel = unitText(it.unit, it.hi);
+    it.text = [it.amt, it.unitLabel, it.name].filter(Boolean).join(" ");
+    return it;
+  });
+}
+function renderShop() {
+  const ul = document.getElementById("shopList");
+  ul.innerHTML = "";
+  shopItems().forEach(it => {
+    const amt = it.amt, unit = it.unitLabel;
+    const li = document.createElement("li");
+    li.className = checked[it.key] ? "done" : "";
+    li.innerHTML = `<label><input type="checkbox" ${checked[it.key] ? "checked" : ""}>
+      <span><span class="itm">${amt ? `<span class="amt">${esc(amt)}${unit ? " " + esc(unit) : ""}</span> ` : ""}${esc(it.name)}</span>
+      <small>${esc(it.from.join(" · "))}</small></span></label>`;
+    li.querySelector("input").onchange = e => {
+      if (e.target.checked) checked[it.key] = true; else delete checked[it.key];
+      li.className = e.target.checked ? "done" : "";
+      savePlan();
+    };
+    ul.appendChild(li);
+  });
+}
+/* ---------- export ---------- */
+function exportItems() {
+  const skip = document.getElementById("skipChecked").checked;
+  return shopItems().filter(it => !(skip && checked[it.key]));
+}
+function listText(compact) {
+  const items = exportItems();
+  if (!items.length) return "";
+  const lines = items.map(it => "- " + it.text);
+  if (compact) return "Shopping list\n" + lines.join("\n");
+  const meals = plan.map(p => {
+    const r = RECIPES.find(x => x.id === p.id);
+    return `- ${r.title} (${p.servings} servings)`;
+  });
+  return "SHOPPING LIST\n" + lines.join("\n") + "\n\nMEALS THIS WEEK\n" + meals.join("\n");
+}
+function toast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("show");
+  clearTimeout(toast.timer); toast.timer = setTimeout(() => t.classList.remove("show"), 2600);
+}
+function needItems() {
+  if (exportItems().length) return true;
+  toast(plan.length ? "Everything is checked off. Untick “Leave out checked items” to include them." : "Add some meals to your plan first.");
+  return false;
+}
+async function copyList() {
+  if (!needItems()) return;
+  const text = listText(false);
+  try { await navigator.clipboard.writeText(text); }
+  catch (e) {
+    const ta = document.createElement("textarea");
+    ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); } catch (e2) {}
+    ta.remove();
+  }
+  toast("Copied! Paste it into Notes, a text, or Google Keep.");
+}
+function emailList() {
+  if (!needItems()) return;
+  location.href = "mailto:?subject=" + encodeURIComponent("Shopping list") + "&body=" + encodeURIComponent(listText(false));
+}
+function makeQR(text) {
+  try {
+    qrcode.stringToBytes = qrcode.stringToBytesFuncs["UTF-8"];
+    const qr = qrcode(0, "L");
+    qr.addData(text, "Byte");
+    qr.make();
+    return qr.createSvgTag({ cellSize: 4, margin: 2, scalable: true });
+  } catch (e) { return null; }
+}
+function showQR() {
+  if (!needItems()) return;
+  const out = document.getElementById("qrout");
+  let text = listText(true);
+  let svg = makeQR(text);
+  if (!svg) {
+    text = text.replace(/^Shopping list\n/, "").replace(/^- /gm, "");
+    svg = makeQR(text);
+  }
+  out.innerHTML = svg
+    ? `<div class="qrimg">${svg}</div><p class="small">${exportItems().length} items</p>`
+    : `<p style="margin:16px 0">This list is too long for one QR code. Use <b>Copy list</b> or <b>Email list</b> instead, or tick off items you already have.</p>`;
+  document.getElementById("qrbox").classList.add("open");
+}
+function closeQR() { document.getElementById("qrbox").classList.remove("open"); }
+document.getElementById("qrbox").addEventListener("click", e => { if (e.target.id === "qrbox") closeQR(); });
+
+function showTab(t) {
+  document.getElementById("view-recipes").hidden = t !== "recipes";
+  document.getElementById("view-plan").hidden = t !== "plan";
+  document.getElementById("tab-recipes").setAttribute("aria-selected", t === "recipes");
+  document.getElementById("tab-plan").setAttribute("aria-selected", t === "plan");
+  try { localStorage.setItem(STORE + ".tab", t); } catch (e) {}
+  if (t === "plan") renderPlan();
+}
+function printPlan() {
+  document.body.classList.add("printing-plan");
+  window.print();
+  document.body.classList.remove("printing-plan");
+}
+document.getElementById("clearPlan").onclick = () => { plan = []; checked = {}; planChanged(); };
+document.getElementById("uncheck").onclick = () => { checked = {}; savePlan(); renderShop(); };
+
+function closeDetail() {
+  document.getElementById("overlay").classList.remove("open");
+  document.body.style.overflow = "";
+  history.replaceState(null, "", location.pathname + location.search);
+}
+document.getElementById("overlay").addEventListener("click", e => { if (e.target.id === "overlay") closeDetail(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") { closeQR(); closeDetail(); } });
+document.getElementById("q").addEventListener("input", e => { state.q = e.target.value; render(); });
+document.getElementById("clear").onclick = () => {
+  state.q = ""; document.getElementById("q").value = "";
+  GROUPS.forEach(x => state.sel[x.key].clear());
+  document.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-pressed", "false"));
+  render();
+};
+
+document.getElementById("count").textContent = `${RECIPES.length} recipes · tap one to see the full recipe`;
+buildFilters();
+render();
+renderPlan();
+try { if (localStorage.getItem(STORE + ".tab") === "plan") showTab("plan"); } catch (e) {}
+if (location.hash.length > 1) open(decodeURIComponent(location.hash.slice(1)));
+</script>
+</body>
+</html>
